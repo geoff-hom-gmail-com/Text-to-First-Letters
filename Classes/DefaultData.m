@@ -46,6 +46,7 @@ NSString *defaultStoreName = @"defaultDataStore.sqlite";
 			// Add the Text to the context.
 			aText = (Text *)[NSEntityDescription insertNewObjectForEntityForName:@"Text" inManagedObjectContext:theManagedObjectContext];
 			aText.title = textTitleString;
+			aText.isDefaultData = YES;
 			intraTextDictionary = [rootDictionary objectForKey:textTitleString];
 			for (key in intraTextDictionary) {
 				if ([key isEqualToString:@"Text"]) {
@@ -115,6 +116,41 @@ NSString *defaultStoreName = @"defaultDataStore.sqlite";
 	// Remove the default-data store and add back the main store.
 	[aPersistentStoreCoordinator removePersistentStore:defaultPersistentStore error:nil];
 	[aPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:mainStoreURL options:nil error:nil];
+}
+
++ (void)restore {
+	
+	// Proceed only if the main store exists.
+	TextMemoryAppDelegate *aTextMemoryAppDelegate = [[UIApplication sharedApplication] delegate];
+	NSURL *mainStoreURL = [[aTextMemoryAppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:mainStoreName];
+	NSString *mainStorePath = [mainStoreURL path];
+	NSFileManager *aFileManager = [[NSFileManager alloc] init];
+	if ([aFileManager fileExistsAtPath:mainStorePath]) {
+		
+		// Fetch all default-data texts. Delete them.
+		NSManagedObjectContext *aManagedObjectContext = [aTextMemoryAppDelegate managedObjectContext];
+		NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+		NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Text" inManagedObjectContext:aManagedObjectContext];
+		[fetchRequest setEntity:entityDescription];
+		
+		// isDefaultData_ is a BOOL but is stored in Core Data as an NSNumber. Fortunately, predicate below seems to work.
+		NSPredicate *predicate = [NSPredicate predicateWithFormat:@"isDefaultData_ == YES"]; 
+		
+		[fetchRequest setPredicate:predicate];
+		NSError *error = nil;
+		NSArray *array = [aManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+		[fetchRequest release];
+		if (array == nil) {
+			NSLog(@"fetch failed?");
+		}
+		NSLog(@"DD restore: fetch count:%d", array.count);
+		
+		// delete...
+		
+		// add the default ones from the default-data store. How to copy from one persistent store to another?
+		//NSLog(@"Copying default-data store to main store.");
+	} 
+	[aFileManager release];
 }
 
 @end

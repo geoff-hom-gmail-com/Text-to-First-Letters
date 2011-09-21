@@ -15,6 +15,9 @@ extern NSString *mainStoreName;
 // Whether to make the default Core Data store.
 extern BOOL makeDefaultDataStore;
 
+// Whether to reset the default data (in the main store).
+extern BOOL restoreDefaultData;
+
 @interface TextMemoryAppDelegate : NSObject <UIApplicationDelegate> {
     
     UIWindow *window;

@@ -11,29 +11,53 @@
 // Private category for private methods.
 @interface Text ()
 
-// An override of NSManagedObject. Initialize values.
+// Start key-value observing.
+- (void)addObservers;
+
+// An override of NSManagedObject. Add observers.
+- (void)awakeFromFetch;
+
+// An override of NSManagedObject. Initialize values. Add observers.
 - (void)awakeFromInsert;
 
 // Create text showing only the first letter of each word of the full text. Replace other letters with spaces. Retain punctuation.
 - (NSString *)createFirstLetterText;
+
+// Stop key-value observing.
+- (void)removeObservers;
+
+// An override of NSManagedObject. Remove observers. Note: This may not work with deletion-undo, since the observer will be removed upon deletion but then not added back. Can test when editing text live.
+- (void)willTurnIntoFault;
 
 @end
 
 
 @implementation Text 
 
-@dynamic firstLetterText, text, title;
+@dynamic firstLetterText, isDefaultData_, text, title;
+
+- (void)addObservers {
+
+	// Watch for bricks being added or deleted.
+	[self addObserver:self forKeyPath:@"text" options:0 context:nil];
+}
+
+- (void)awakeFromFetch {
+
+	[super awakeFromFetch];
+	[self addObservers];
+}
 
 - (void)awakeFromInsert {
 	
 	[super awakeFromInsert];
+	[self addObservers];
 	
 	// Persistent data.
 	NSLog(@"Awake from insert");
-	// this should not be called for default-data stuff
+	self.isDefaultData = NO;
 	self.title = @"Default Title";
 	self.text = @"This is the default text.";
-	self.firstLetterText = [self createFirstLetterText];
 }
 
 - (NSString *)createFirstLetterText {
@@ -74,6 +98,38 @@
 		previousCharacterWasLetter = currentCharacterIsLetter;
 	}
 	return aMutableFirstLetterText;
+}
+
+- (BOOL)isDefaultData {
+	
+	return [self.isDefaultData_ boolValue];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+	
+	// If the text was changed, then update the first-letter text.
+	if ([keyPath isEqualToString:@"text"]) {
+		
+		NSLog(@"Text oVFKP: text changed.");
+		self.firstLetterText = [self createFirstLetterText];
+	}
+}
+
+- (void)removeObservers {
+
+	// Stop watching for changes to the text.
+	[self removeObserver:self forKeyPath:@"text"];
+}
+
+- (void)setIsDefaultData:(BOOL)value {
+	
+	self.isDefaultData_ = [NSNumber numberWithBool:value];
+}
+ 
+- (void)willTurnIntoFault {
+	
+	[super willTurnIntoFault];
+	[self removeObservers];
 }
 
 @end

@@ -15,6 +15,9 @@ NSString *mainStoreName = @"Text_Memory.sqlite";
 // Set to YES to skip regular operation and make default-data store.
 BOOL makeDefaultDataStore = NO;
 
+// Set to YES to reset the default data. The user's texts should be unaffected. 
+BOOL restoreDefaultData = NO;
+
 @implementation TextMemoryAppDelegate
 
 @synthesize window;
@@ -29,6 +32,10 @@ BOOL makeDefaultDataStore = NO;
 		
 		[DefaultData makeStore];
 	} else {
+		
+		if (restoreDefaultData) {
+			[DefaultData restore];
+		}
 		
 		// Add root view controller.
 		UIViewController *aRootViewController = [[RootViewController alloc] init];
@@ -120,12 +127,12 @@ BOOL makeDefaultDataStore = NO;
         return persistentStoreCoordinator_;
     }
     
-	// If the main store doesn't exist, copy the default store to it.
+	// If the main store doesn't exist, and we're not making the default-data store, copy the default-data store to it.
 	
 	NSURL *mainStoreURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:mainStoreName];
 	NSString *mainStorePath = [mainStoreURL path];
 	NSFileManager *aFileManager = [[NSFileManager alloc] init];
-	if (![aFileManager fileExistsAtPath:mainStorePath]) {
+	if (![aFileManager fileExistsAtPath:mainStorePath] && !makeDefaultDataStore) {
 		
 		NSLog(@"Copying default-data store to main store.");
 		[DefaultData copyDefaultStoreToURL:mainStoreURL];

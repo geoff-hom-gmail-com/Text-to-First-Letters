@@ -28,4 +28,7 @@ extern NSString *defaultStoreName;
  */
 + (void)makeStore;
 
+// Restore the default data in the main store without affecting the user's data.
++ (void)restore;
+
 @end
