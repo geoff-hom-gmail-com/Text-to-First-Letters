@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Introduction</key>
+	<dict>
+		<key>Text</key>
+		<string>This is the intro text...</string>
+	</dict>
+	<key>Example</key>
+	<dict>
+		<key>Text</key>
+		<string>The quick brown fox jumped over the lazy dog.</string>
+	</dict>
+</dict>
+</plist>
