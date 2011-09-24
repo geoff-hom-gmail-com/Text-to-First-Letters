@@ -11,6 +11,9 @@
 // Name of the file for the default-data Core Data store.
 extern NSString *defaultStoreName;
 
+// Title of the text to show when the app is first started.
+extern NSString *welcomeTextTitle;
+
 @interface DefaultData : NSObject {
 }
 

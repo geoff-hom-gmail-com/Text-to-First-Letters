@@ -18,6 +18,8 @@
 		93908AD9142901960037CE62 /* DefaultData.m in Sources */ = {isa = PBXBuildFile; fileRef = 93908AD8142901960037CE62 /* DefaultData.m */; };
 		93908B2D142911D80037CE62 /* default-data.plist in Resources */ = {isa = PBXBuildFile; fileRef = 93908B2C142911D80037CE62 /* default-data.plist */; };
 		93908B7114291A570037CE62 /* defaultDataStore.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 93908B7014291A570037CE62 /* defaultDataStore.sqlite */; };
+		93908D15142D0FB90037CE62 /* TextsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93908D13142D0FB90037CE62 /* TextsTableViewController.m */; };
+		93908D16142D0FB90037CE62 /* TextsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 93908D14142D0FB90037CE62 /* TextsTableViewController.xib */; };
 		93B8598F1421805C00C209A1 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93B8598D1421805C00C209A1 /* RootViewController.m */; };
 		93B859901421805C00C209A1 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 93B8598E1421805C00C209A1 /* RootViewController.xib */; };
 		93B85A6414219E4000C209A1 /* Text.m in Sources */ = {isa = PBXBuildFile; fileRef = 93B85A6314219E4000C209A1 /* Text.m */; };
@@ -40,6 +42,9 @@
 		93908AD8142901960037CE62 /* DefaultData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultData.m; sourceTree = "<group>"; };
 		93908B2C142911D80037CE62 /* default-data.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "default-data.plist"; sourceTree = "<group>"; };
 		93908B7014291A570037CE62 /* defaultDataStore.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = defaultDataStore.sqlite; sourceTree = "<group>"; };
+		93908D12142D0FB90037CE62 /* TextsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextsTableViewController.h; sourceTree = "<group>"; };
+		93908D13142D0FB90037CE62 /* TextsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextsTableViewController.m; sourceTree = "<group>"; };
+		93908D14142D0FB90037CE62 /* TextsTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TextsTableViewController.xib; sourceTree = "<group>"; };
 		93B8598C1421805C00C209A1 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
 		93B8598D1421805C00C209A1 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		93B8598E1421805C00C209A1 /* RootViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
@@ -74,6 +79,9 @@
 				93B85A6314219E4000C209A1 /* Text.m */,
 				1D3623240D0F684500981E51 /* TextMemoryAppDelegate.h */,
 				1D3623250D0F684500981E51 /* TextMemoryAppDelegate.m */,
+				93908D12142D0FB90037CE62 /* TextsTableViewController.h */,
+				93908D13142D0FB90037CE62 /* TextsTableViewController.m */,
+				93908D14142D0FB90037CE62 /* TextsTableViewController.xib */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -183,6 +191,7 @@
 				93B859901421805C00C209A1 /* RootViewController.xib in Resources */,
 				93908B2D142911D80037CE62 /* default-data.plist in Resources */,
 				93908B7114291A570037CE62 /* defaultDataStore.sqlite in Resources */,
+				93908D16142D0FB90037CE62 /* TextsTableViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,6 +208,7 @@
 				93B8598F1421805C00C209A1 /* RootViewController.m in Sources */,
 				93B85A6414219E4000C209A1 /* Text.m in Sources */,
 				93908AD9142901960037CE62 /* DefaultData.m in Sources */,
+				93908D15142D0FB90037CE62 /* TextsTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

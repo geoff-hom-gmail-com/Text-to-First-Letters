@@ -12,6 +12,8 @@
 
 NSString *defaultStoreName = @"defaultDataStore.sqlite";
 
+NSString *welcomeTextTitle = @"Introduction";
+
 // Private category for private methods.
 @interface DefaultData ()
 

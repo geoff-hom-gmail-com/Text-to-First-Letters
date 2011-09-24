@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TextsTableViewController.h"
 
 @class Text;
 
-@interface RootViewController : UIViewController {
+@interface RootViewController : UIViewController <TextsTableViewDelegate> {
 
 @private
     Text *introText_;
@@ -24,7 +25,20 @@
 
 @property (nonatomic, retain, readonly) Text *introText;
 
+// Switch controlling whether first letters or full text is shown.
+@property (nonatomic, retain) IBOutlet UISwitch *showFirstLettersSwitch;
+
+// The title of the current text.
+@property (nonatomic, retain) IBOutlet UIBarButtonItem *titleBarButtonItem;
+
+// Show/hide popover for selecting a text.
+// if user taps toolbar or button, does it dismiss popover? if outside popover, does it dismiss?
+- (IBAction)showTextsPopover:(id)sender;
+
 // If showing full text, show first letters only. And vice versa.
 - (IBAction)toggleFirstLetters:(id)sender;
+
+// TextsTableViewDelegate method. Since the user selected a text, dismiss the popover and show the text.
+- (void)textSelected:(Text *)theText;
 
 @end

@@ -38,7 +38,7 @@
 
 - (void)addObservers {
 
-	// Watch for bricks being added or deleted.
+	// Watch for changes to the actual text.
 	[self addObserver:self forKeyPath:@"text" options:0 context:nil];
 }
 
