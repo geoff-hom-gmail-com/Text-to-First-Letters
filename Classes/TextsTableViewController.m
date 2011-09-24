@@ -21,7 +21,7 @@
 
 @implementation TextsTableViewController
 
-@synthesize delegate;
+@synthesize currentText, delegate;
 @synthesize textsArray;
 
 #pragma mark -
@@ -31,10 +31,10 @@
     [super viewDidLoad];
 
     // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
+    //self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    //self.navigationItem.rightBarButtonItem = self.editButtonItem;
 		
 	// Fetch all texts.
 	
@@ -140,12 +140,19 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        //cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
     
     // Configure the cell.
 	Text *aText = (Text *)[self.textsArray objectAtIndex:indexPath.row];
 	cell.textLabel.text = aText.title;
+	cell.detailTextLabel.text = aText.text;
+	
+	// If cell is for the current text, add a checkmark.
+	if (aText == self.currentText) {
+		cell.accessoryType = UITableViewCellAccessoryCheckmark;
+	}
     
     return cell;
 }
@@ -226,6 +233,10 @@
 
 
 - (void)dealloc {
+	
+	[currentText release];
+	[textsArray release];
+	
     [super dealloc];
 }
 

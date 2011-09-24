@@ -30,6 +30,9 @@
 // Show the entire text (vs. only first letters).
 - (void)showFullText;
 
+// If showing full text, show first letters only. And vice versa. Also adjust the switch.
+- (void)toggleFirstLetters;
+
 @end
 
 @implementation RootViewController
@@ -148,6 +151,7 @@
 		// Create the view controller for the popover.
 		TextsTableViewController *aTextsTableViewController = [[TextsTableViewController alloc] init];
 		aTextsTableViewController.delegate = self;
+		aTextsTableViewController.currentText = self.currentText;
 		UIViewController *aViewController = aTextsTableViewController;
 		
 		// Create the popover controller, if necessary.
@@ -174,12 +178,14 @@
 	self.currentText = theText;
 }
 
-- (IBAction)toggleFirstLetters:(id)sender {
+- (void)toggleFirstLetters {
 	
 	if (self.showFirstLettersSwitch.on) {
-		[self showFirstLettersOnly];
-	} else {
+		self.showFirstLettersSwitch.on = NO;
 		[self showFullText];
+	} else {
+		self.showFirstLettersSwitch.on = YES;
+		[self showFirstLettersOnly];
 	}
 }
 
@@ -193,6 +199,12 @@
 	
 	// Set initial text.
 	self.currentText = [self introText];
+	
+	// Disable the switch's animation, to allow faster work. To do this, we'll add a custom (invisible) button over the switch. When the button is tapped, it will do the work the switch would normally do, except the switch's status will also be set, programmatically, without animation.
+	UIButton *aButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[aButton addTarget:self action:@selector(toggleFirstLetters) forControlEvents:UIControlEventTouchUpInside];
+	aButton.frame = self.showFirstLettersSwitch.frame;
+	[self.view addSubview:aButton];
 }
 
 - (void)viewDidUnload {

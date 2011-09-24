@@ -20,6 +20,9 @@
 @interface TextsTableViewController : UITableViewController {
 }
 
+// The current text.
+@property (nonatomic, retain) Text *currentText;
+
 @property (nonatomic, assign) id <TextsTableViewDelegate> delegate;
 
 @end

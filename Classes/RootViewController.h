@@ -25,7 +25,7 @@
 
 @property (nonatomic, retain, readonly) Text *introText;
 
-// Switch controlling whether first letters or full text is shown.
+// A switch controlling whether first letters or full text is shown.
 @property (nonatomic, retain) IBOutlet UISwitch *showFirstLettersSwitch;
 
 // The title of the current text.
@@ -34,9 +34,6 @@
 // Show/hide popover for selecting a text.
 // if user taps toolbar or button, does it dismiss popover? if outside popover, does it dismiss?
 - (IBAction)showTextsPopover:(id)sender;
-
-// If showing full text, show first letters only. And vice versa.
-- (IBAction)toggleFirstLetters:(id)sender;
 
 // TextsTableViewDelegate method. Since the user selected a text, dismiss the popover and show the text.
 - (void)textSelected:(Text *)theText;

@@ -9,16 +9,13 @@
 #import <Foundation/Foundation.h>
 
 // Name of the file for the default-data Core Data store.
-extern NSString *defaultStoreName;
+extern NSString *defaultDataStoreName;
 
 // Title of the text to show when the app is first started.
 extern NSString *welcomeTextTitle;
 
 @interface DefaultData : NSObject {
 }
-
-// Copy the default-data Core Data store to the given URL. The store must be in the main bundle.
-+ (void)copyDefaultStoreToURL:(NSURL *)theURL;
 
 /* 
  (For developers.) Make the Core Data store for default data by parsing a property list. 

@@ -127,15 +127,15 @@ BOOL restoreDefaultData = NO;
         return persistentStoreCoordinator_;
     }
     
-	// If the main store doesn't exist, and we're not making the default-data store, copy the default-data store to it.
+	// If the main store doesn't exist, and we're not making the default-data store, then copy the default data to the main store.
 	
 	NSURL *mainStoreURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:mainStoreName];
 	NSString *mainStorePath = [mainStoreURL path];
 	NSFileManager *aFileManager = [[NSFileManager alloc] init];
+	BOOL copyDefaultData = NO;
 	if (![aFileManager fileExistsAtPath:mainStorePath] && !makeDefaultDataStore) {
 		
-		NSLog(@"Copying default-data store to main store.");
-		[DefaultData copyDefaultStoreToURL:mainStoreURL];
+		copyDefaultData = YES;
 	} 
 	[aFileManager release];
     
@@ -167,7 +167,13 @@ BOOL restoreDefaultData = NO;
          */
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
-    }    
+    }
+	
+	if (copyDefaultData) {
+		
+		NSLog(@"Copying default data to main store.");
+		[DefaultData restore];
+	}
     
     return persistentStoreCoordinator_;
 }
