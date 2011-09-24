@@ -53,11 +53,11 @@
 	
 	// Fetch.
 	NSError *error; 
-	NSMutableArray *fetchResults = [[aTextMemoryAppDelegate.managedObjectContext executeFetchRequest:request error:&error] mutableCopy]; 
+	NSMutableArray *fetchResultsMutableArray = [[aTextMemoryAppDelegate.managedObjectContext executeFetchRequest:request error:&error] mutableCopy]; 
 	
 	[request release];
 	
-	if (fetchResults == nil) {
+	if (fetchResultsMutableArray == nil) {
 		
 		// Handle the error.
 		NSLog(@"Fetch result was nil.");
@@ -65,9 +65,9 @@
 	
 	// Move instructions to the top of the table.
 	int instructionsIndex = -1;
-	for (int i=0; i < fetchResults.count; i++) {
+	for (int i=0; i < fetchResultsMutableArray.count; i++) {
 		
-		Text *aText = [fetchResults objectAtIndex:i];
+		Text *aText = [fetchResultsMutableArray objectAtIndex:i];
 		if ([aText isDefaultData] && [aText.title isEqualToString:welcomeTextTitle]) {
 			instructionsIndex = i;
 			break;
@@ -75,12 +75,12 @@
 	}
 	if (instructionsIndex != -1) {
 		
-		Text *instructionsText = [fetchResults objectAtIndex:instructionsIndex];
-		[fetchResults removeObjectAtIndex:instructionsIndex];
-		[fetchResults insertObject:instructionsText atIndex:0];
+		Text *instructionsText = [fetchResultsMutableArray objectAtIndex:instructionsIndex];
+		[fetchResultsMutableArray removeObjectAtIndex:instructionsIndex];
+		[fetchResultsMutableArray insertObject:instructionsText atIndex:0];
 	}
 	
-	self.textsArray = fetchResults;
+	self.textsArray = fetchResultsMutableArray;
 	
 	// Set size in popover to match the number of content rows.
 	[self.tableView layoutIfNeeded];

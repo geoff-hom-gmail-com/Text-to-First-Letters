@@ -20,6 +20,9 @@
 @property (nonatomic, retain) NSString *title;
 @property (nonatomic, retain) NSString *text;
 
+// Return a new instance with the same properties as this one. 
+- (Text *)clone;
+
 // Return isDefaultData_ as BOOL.
 - (BOOL)isDefaultData;
 

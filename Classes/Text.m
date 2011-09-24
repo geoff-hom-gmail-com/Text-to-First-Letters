@@ -7,6 +7,7 @@
 //
 
 #import "Text.h"
+#import "TextMemoryAppDelegate.h"
 
 // Private category for private methods.
 @interface Text ()
@@ -58,6 +59,22 @@
 	self.isDefaultData = NO;
 	self.title = @"Default Title";
 	self.text = @"This is the default text.";
+}
+
+- (Text *)clone {
+	
+	TextMemoryAppDelegate *aTextMemoryAppDelegate = [[UIApplication sharedApplication] delegate];
+	NSManagedObjectContext *aManagedObjectContext = [aTextMemoryAppDelegate managedObjectContext];
+	
+	Text *aText = (Text *)[NSEntityDescription insertNewObjectForEntityForName:@"Text" inManagedObjectContext:aManagedObjectContext];
+	
+    NSDictionary *attributesDictionary = [[NSEntityDescription entityForName:@"Text" inManagedObjectContext:aManagedObjectContext] attributesByName];
+	
+    for (NSString *attributeKey in attributesDictionary) {
+        [aText setValue:[self valueForKey:attributeKey] forKey:attributeKey];
+    }
+	
+    return aText;
 }
 
 - (NSString *)createFirstLetterText {

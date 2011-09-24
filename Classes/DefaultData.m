@@ -12,7 +12,7 @@
 
 NSString *defaultStoreName = @"defaultDataStore.sqlite";
 
-NSString *welcomeTextTitle = @"Introduction";
+NSString *welcomeTextTitle = @"Welcome";
 
 // Private category for private methods.
 @interface DefaultData ()
@@ -122,14 +122,88 @@ NSString *welcomeTextTitle = @"Introduction";
 
 + (void)restore {
 	
-	// Proceed only if the main store exists.
+	// Get original default data (in default-data store).
+	
 	TextMemoryAppDelegate *aTextMemoryAppDelegate = [[UIApplication sharedApplication] delegate];
+	
+	// Add default-data store to coordinator.
+	NSPersistentStoreCoordinator *aPersistentStoreCoordinator = [aTextMemoryAppDelegate persistentStoreCoordinator];
+	NSURL *defaultDataStoreURL = [[aTextMemoryAppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:defaultStoreName];
+	[aPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:defaultDataStoreURL options:nil error:nil];
+	
+	// Fetch all texts from default-data store.
+	
+	NSFetchRequest *aFetchRequest = [[NSFetchRequest alloc] init];
+	
+	NSManagedObjectContext *aManagedObjectContext = [aTextMemoryAppDelegate managedObjectContext];
+	NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Text" inManagedObjectContext:aManagedObjectContext];
+	[aFetchRequest setEntity:entityDescription];
+	NSPersistentStore *defaultDataPersistentStore = [aPersistentStoreCoordinator persistentStoreForURL:defaultDataStoreURL];
+	[aFetchRequest setAffectedStores:[NSArray arrayWithObject:defaultDataPersistentStore]];
+	NSError *error;
+	NSArray *defaultTextsArray = [aManagedObjectContext executeFetchRequest:aFetchRequest error:&error];
+	
+	// Fetch all default-data texts from main store.
+	
+	NSURL *mainStoreURL = [[aTextMemoryAppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:mainStoreName];
+	NSPersistentStore *mainPersistentStore = [aPersistentStoreCoordinator persistentStoreForURL:mainStoreURL];
+	[aFetchRequest setAffectedStores:[NSArray arrayWithObject:mainPersistentStore]];
+	NSArray *defaultTextsFromMainStoreArray = [aManagedObjectContext executeFetchRequest:aFetchRequest error:&error];
+	
+	[aFetchRequest release];
+	
+	// Delete default-data texts from main store.
+	for (Text *aText in defaultTextsFromMainStoreArray) {
+		[aManagedObjectContext deleteObject:aText];
+	}
+	
+	// Create new texts for main store.
+	Text *newText;
+	for (Text *aText in defaultTextsArray) {
+		
+		newText = [aText clone];
+		[aManagedObjectContext assignObject:newText toPersistentStore:mainPersistentStore];
+	}
+	
+	// Remove default-data store from coordinator.
+	[aPersistentStoreCoordinator removePersistentStore:defaultDataPersistentStore error:nil];
+	
+	// Save.
+	[aManagedObjectContext save:&error];
+	
+	
+	/*
 	NSURL *mainStoreURL = [[aTextMemoryAppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:mainStoreName];
 	NSString *mainStorePath = [mainStoreURL path];
 	NSFileManager *aFileManager = [[NSFileManager alloc] init];
 	if ([aFileManager fileExistsAtPath:mainStorePath]) {
 		
-		// Fetch all default-data texts. Delete them.
+		// Fetch all texts in default-data store.
+		NSManagedObjectContext *aManagedObjectContext = [aTextMemoryAppDelegate managedObjectContext];
+		NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+		NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Text" inManagedObjectContext:aManagedObjectContext];
+		[fetchRequest setEntity:entityDescription];
+		NSError *error = nil;
+		NSArray *fetchResultsArray = [aManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+		[fetchRequest release];
+		if (array == nil) {
+			NSLog(@"fetch failed?");
+		}
+		NSLog(@"DD restore: fetch from default-data store count:%d", fetchResultsArray.count);
+		
+	} 
+	
+	// Delete old default data (in main store).
+	
+	// Copy original default data to main store.
+	
+	// Proceed only if the main store exists.
+	NSURL *mainStoreURL = [[aTextMemoryAppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:mainStoreName];
+	NSString *mainStorePath = [mainStoreURL path];
+	NSFileManager *aFileManager = [[NSFileManager alloc] init];
+	if ([aFileManager fileExistsAtPath:mainStorePath]) {
+		
+		// Fetch all default-data texts.
 		NSManagedObjectContext *aManagedObjectContext = [aTextMemoryAppDelegate managedObjectContext];
 		NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
 		NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Text" inManagedObjectContext:aManagedObjectContext];
@@ -140,19 +214,23 @@ NSString *welcomeTextTitle = @"Introduction";
 		
 		[fetchRequest setPredicate:predicate];
 		NSError *error = nil;
-		NSArray *array = [aManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+		NSArray *fetchResultsArray = [aManagedObjectContext executeFetchRequest:fetchRequest error:&error];
 		[fetchRequest release];
 		if (array == nil) {
 			NSLog(@"fetch failed?");
 		}
-		NSLog(@"DD restore: fetch count:%d", array.count);
+		NSLog(@"DD restore: fetch count:%d", fetchResultsArray.count);
 		
-		// delete...
+		// Delete the default-data texts.
+		for (Text *aText in fetchResultsArray) {
+			[aManagedObjectContext deleteObject:aText];
+		}
 		
 		// add the default ones from the default-data store. How to copy from one persistent store to another?
 		//NSLog(@"Copying default-data store to main store.");
 	} 
 	[aFileManager release];
+	 */
 }
 
 @end
