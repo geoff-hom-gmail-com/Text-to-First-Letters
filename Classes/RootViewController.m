@@ -7,7 +7,9 @@
 //
 
 #import "DefaultData.h"
+#import "EditTextViewController.h"
 #import "RootViewController.h"
+#import <QuartzCore/QuartzCore.h>
 #import "Text.h"
 #import "TextMemoryAppDelegate.h"
 #import "TextsTableViewController.h"
@@ -69,6 +71,29 @@
     [super didReceiveMemoryWarning];
     
     // Release any cached data, images, etc. that aren't in use.
+}
+
+- (IBAction)editText:(id)sender {
+	
+	EditTextViewController *anEditTextViewController = [(EditTextViewController *)[EditTextViewController alloc] initWithText:self.currentText];
+	anEditTextViewController.delegate = self;
+	
+	// Show the editing view. Instead of the navigation controller's transition, do a fade.
+	CATransition *aTransition = [CATransition animation];
+	//aTransition.duration = 1.0;
+	[self.navigationController.view.layer addAnimation:aTransition forKey:nil];
+	[self.navigationController pushViewController:anEditTextViewController animated:NO];
+	
+	[anEditTextViewController release];
+}
+
+- (void)editTextViewControllerDidFinishEditing:(EditTextViewController *)sender {
+	
+	if (self.showFirstLettersSwitch.on) {
+		[self showFirstLettersOnly];
+	} else {
+		[self showFullText];
+	}
 }
 
 // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
@@ -172,10 +197,10 @@
 	}	
 }
 
-- (void)textSelected:(Text *)theText {
+- (void)textsTableViewControllerDidSelectText:(TextsTableViewController *)sender {
 	
 	[self.popoverController dismissPopoverAnimated:YES];
-	self.currentText = theText;
+	self.currentText = sender.currentText;
 }
 
 - (void)toggleFirstLetters {

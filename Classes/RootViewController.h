@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EditTextViewController.h"
 #import "TextsTableViewController.h"
 
 @class Text;
 
-@interface RootViewController : UIViewController <TextsTableViewDelegate> {
+@interface RootViewController : UIViewController <EditTextViewControllerDelegate, TextsTableViewDelegate> {
 
 @private
     Text *introText_;
@@ -31,11 +32,16 @@
 // The title of the current text.
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *titleBarButtonItem;
 
+// Show view for editing the current text.
+- (IBAction)editText:(id)sender;
+
+// EditTextViewControllerDelegate method. Since the text may have changed, update the view.
+- (void)editTextViewControllerDidFinishEditing:(EditTextViewController *)sender;
+
 // Show/hide popover for selecting a text.
-// if user taps toolbar or button, does it dismiss popover? if outside popover, does it dismiss?
 - (IBAction)showTextsPopover:(id)sender;
 
 // TextsTableViewDelegate method. Since the user selected a text, dismiss the popover and show the text.
-- (void)textSelected:(Text *)theText;
+- (void)textsTableViewControllerDidSelectText:(TextsTableViewController *)sender;
 
 @end

@@ -8,12 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@class Text;
+@class Text, TextsTableViewController;
 
 @protocol TextsTableViewDelegate
 
-// Sent after the user selects a row in the texts list.
-- (void)textSelected:(Text *)theText;
+// Sent after the user selected a text.
+- (void)textsTableViewControllerDidSelectText:(TextsTableViewController *)sender;
 
 @end
 

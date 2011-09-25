@@ -8,6 +8,7 @@
 
 #import "DefaultData.h"
 #import "RootViewController.h"
+#import <QuartzCore/QuartzCore.h>
 #import "TextMemoryAppDelegate.h"
 
 NSString *mainStoreName = @"Text_Memory.sqlite";
@@ -37,10 +38,21 @@ BOOL restoreDefaultData = NO;
 			[DefaultData restore];
 		}
 		
-		// Add root view controller.
+		// Add navigation controller with our root view controller.
+		RootViewController *aRootViewController = [[RootViewController alloc] init]; 
+		UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:aRootViewController];
+		[aRootViewController release];
+		[aNavigationController setNavigationBarHidden:YES animated:NO];
+		aNavigationController.toolbarHidden = YES;
+		self.window.rootViewController = aNavigationController;
+		[aNavigationController release];
+		
+		/*
+		 // Add root view controller.
 		UIViewController *aRootViewController = [[RootViewController alloc] init];
 		self.window.rootViewController = aRootViewController;
 		[aRootViewController release];
+		 */
 	}
 	
     [self.window makeKeyAndVisible];

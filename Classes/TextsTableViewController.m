@@ -211,8 +211,10 @@
     [detailViewController release];
     */
 	
-	// Notify the delegate that a row was selected.
-	[self.delegate textSelected:[self.textsArray objectAtIndex:indexPath.row]];
+	self.currentText = [self.textsArray objectAtIndex:indexPath.row];
+	
+	// Notify the delegate that a text was selected.
+	[self.delegate textsTableViewControllerDidSelectText:self];
 }
 
 
@@ -239,7 +241,6 @@
 	
     [super dealloc];
 }
-
 
 @end
 
