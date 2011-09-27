@@ -14,6 +14,12 @@
 // Private category for private methods.
 @interface EditTextViewController ()
 
+// The alert view for editing the title.
+@property (nonatomic, retain) UIAlertView *titleAlertView;
+
+// The text field for editing the title. Shown in an alert view.
+@property (nonatomic, retain) UITextField *titleTextField;
+
 // Remove/pop this view controller, but instead of the navigation controller's transition, do a fade.
 - (void)fadeAway;
 
@@ -22,14 +28,33 @@
 
 @implementation EditTextViewController
 
+@synthesize titleAlertView, titleTextField;
 @synthesize currentText, currentTextTextView, delegate, titleBarButtonItem;
 
+- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
+	
+	if (buttonIndex == 1) {
+		
+		// Save new title.
+		self.currentText.title = self.titleTextField.text;
+		TextMemoryAppDelegate *aTextMemoryAppDelegate = [[UIApplication sharedApplication] delegate];
+		[aTextMemoryAppDelegate saveContext];
+		self.titleBarButtonItem.title = [NSString stringWithFormat:@"Editing \"%@\"", self.currentText.title];
+	}
+}
+
 - (IBAction)cancelEditing:(id)sender {
+	
+	// Notify the delegate.
+	[self.delegate editTextViewControllerDidFinishEditing:self];
 	
 	[self fadeAway];
 }
 
 - (void)dealloc {
+	
+	[titleAlertView release];
+	[titleTextField release];
 	
 	[currentText release];
 	[currentTextTextView release];
@@ -48,7 +73,7 @@
 - (void)fadeAway {
 	
 	CATransition *aTransition = [CATransition animation];
-	//aTransition.duration = 1.0;
+	aTransition.duration = fadeTransitionDuration;
 	[self.navigationController.view.layer addAnimation:aTransition forKey:nil];
 	[self.navigationController popViewControllerAnimated:NO];
 }
@@ -63,13 +88,32 @@
     return self;
 }
 
+- (IBAction)renameTitle:(id)sender {
+	
+	// In iOS 5.0, UIAlertViewStylePlainTextInput should work. Until then, we'll add a text field to the alert view. The alert's message provides space for the text view. 
+	UIAlertView *anAlertView = [[UIAlertView alloc] initWithTitle:@"Rename Title" message:@"\n " delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Done", nil];
+	UITextField *aTextField = [[UITextField alloc] initWithFrame:CGRectMake(17.0, 57.0, 250.0, 27.0)];
+	aTextField.borderStyle = UITextBorderStyleRoundedRect;
+	aTextField.delegate = self;
+	aTextField.returnKeyType = UIReturnKeyDone;
+	aTextField.text = self.currentText.title;
+	[anAlertView addSubview:aTextField];
+	self.titleTextField = aTextField;
+	[aTextField release];
+	[anAlertView show];
+	self.titleAlertView = anAlertView;
+	[anAlertView release];
+	
+	// Show cursor and keyboard.
+	[aTextField becomeFirstResponder];
+}
+
 - (IBAction)saveEditing:(id)sender {
 	
 	// Save current Text.
 	self.currentText.text = self.currentTextTextView.text;
 	TextMemoryAppDelegate *aTextMemoryAppDelegate = [[UIApplication sharedApplication] delegate];
-	NSError *error;
-	[aTextMemoryAppDelegate.managedObjectContext save:&error];
+	[aTextMemoryAppDelegate saveContext];
 	
 	// Notify the delegate.
 	[self.delegate editTextViewControllerDidFinishEditing:self];
@@ -82,6 +126,11 @@
     return YES;
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	
+	[self.titleAlertView dismissWithClickedButtonIndex:1 animated:YES];
+	return NO;
+}
 
 - (void)viewDidLoad {
 	
@@ -98,10 +147,10 @@
     
 	// Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
+	self.titleAlertView = nil;
+	self.titleTextField = nil;
 	self.currentTextTextView = nil;
 	self.titleBarButtonItem = nil;
 }
-
-
 
 @end

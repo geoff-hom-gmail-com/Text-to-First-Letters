@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
 
+// When using a fade transition (e.g., CATransition), how long to take.
+extern CGFloat fadeTransitionDuration;
+
 // Name of the file for the main Core Data store.
 extern NSString *mainStoreName;
 
@@ -37,6 +40,9 @@ extern BOOL restoreDefaultData;
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 - (NSURL *)applicationDocumentsDirectory;
+
+// Save the main managed object context to disk.
+- (void)saveContext;
 
 @end
 

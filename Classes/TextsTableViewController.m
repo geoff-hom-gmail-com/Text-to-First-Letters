@@ -46,7 +46,7 @@
 	[request setEntity:entity];
 	
 	// Set sorting: alphabetize by whether default data, then by title.
-	NSSortDescriptor *byDefaultDataSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"isDefaultData_" ascending:YES];
+	NSSortDescriptor *byDefaultDataSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"isDefaultData_" ascending:NO];
 	NSSortDescriptor *byTitleSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"title" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
 	NSArray *sortDescriptors = [NSArray arrayWithObjects:byDefaultDataSortDescriptor, byTitleSortDescriptor, nil];
 	[request setSortDescriptors:sortDescriptors];

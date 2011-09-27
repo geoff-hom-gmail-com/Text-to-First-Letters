@@ -17,7 +17,7 @@
 
 @end
 
-@interface EditTextViewController : UIViewController {
+@interface EditTextViewController : UIViewController <UIAlertViewDelegate, UITextFieldDelegate> {
 }
 
 // The current text.
@@ -31,13 +31,22 @@
 // The title of the current text.
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *titleBarButtonItem;
 
+// UIAlertViewDelegate method. If the "Done" button was clicked, then save the new title. (Would use alertView:clickedButtonAtIndex:, but we also need to activate the "Done" button programmatically. The only way to do that is [alertView dismissWithClickedButtonIndex:animated], which skips alertView:clickedButtonAtIndex:.) 
+- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex;
+
 // Cancel any changes and go back to the main view.
 - (IBAction)cancelEditing:(id)sender;
 
 // The designated initializer.
 - (id)initWithText:(Text *)theText;
 
+// Show an alert view for renaming the text's title.
+- (IBAction)renameTitle:(id)sender;
+
 // Save changes to current text and go back to the main view.
 - (IBAction)saveEditing:(id)sender;
+
+// UITextFieldDelegate method. Since the "Done" key was tapped, mimic the "Done" key in the alert view.
+- (BOOL)textFieldShouldReturn:(UITextField *)textField;
 
 @end

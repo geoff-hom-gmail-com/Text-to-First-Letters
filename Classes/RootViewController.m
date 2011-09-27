@@ -20,9 +20,6 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 // Private category for private methods.
 @interface RootViewController ()
 
-// When the user tries to delete a text, we show an action sheet. We keep a reference to know if a sheet is already showing.
-@property (nonatomic, retain) UIActionSheet *deleteTextActionSheet;
-
 // Once we create this, we'll keep it in memory and just reuse it.
 @property (nonatomic, retain) UIPopoverController *popoverController;
 
@@ -48,8 +45,8 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 
 @implementation RootViewController
 
-@synthesize bottomToolbar, currentText, currentTextTextView, showFirstLettersSwitch, titleLabel, topToolbar, trashBarButtonItem;
-@synthesize deleteTextActionSheet, popoverController;
+@synthesize bottomToolbar, currentText, currentTextTextView, editTextBarButtonItem, showFirstLettersSwitch, titleLabel, topToolbar, trashBarButtonItem;
+@synthesize popoverController;
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	
@@ -58,19 +55,24 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 		
 		[self deleteCurrentText];
 	}
-	self.deleteTextActionSheet = nil;
 	
-	// Re-enable corresponding toolbar. (Currently, the only action sheets that should call this method are for the Delete button.)
+	// Re-enable corresponding toolbar. (Currently, the only action sheets that should call this method are for buttons on the bottom toolbar.)
 	self.bottomToolbar.userInteractionEnabled = YES;
 }
 
 - (IBAction)addAText:(id)sender {
 	
-	NSManagedObjectContext *aManagedObjectContext = [(TextMemoryAppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+	// Add text and save.
+	TextMemoryAppDelegate *aTextMemoryAppDelegate = (TextMemoryAppDelegate *)[[UIApplication sharedApplication] delegate];
+	NSManagedObjectContext *aManagedObjectContext = [aTextMemoryAppDelegate managedObjectContext];
 	Text *aText = (Text *)[NSEntityDescription insertNewObjectForEntityForName:@"Text" inManagedObjectContext:aManagedObjectContext];
+	[aTextMemoryAppDelegate saveContext];
+	
+	// Show new text, fading into it.
+	CATransition *aTransition = [CATransition animation];
+	aTransition.duration = fadeTransitionDuration;
+	[self.navigationController.view.layer addAnimation:aTransition forKey:nil];
 	self.currentText = aText;
-	NSError *error;
-	[aManagedObjectContext save:&error];
 }
 
 - (void)addObservers {
@@ -85,14 +87,13 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 	
 	self.popoverController.delegate = nil;
 	[popoverController release];
-	self.deleteTextActionSheet.delegate = nil;
-	[deleteTextActionSheet release];
 	
 	[introText_ release];
     
 	[bottomToolbar release];
 	[currentText release];
 	[currentTextTextView release];
+	[editTextBarButtonItem release];
 	[showFirstLettersSwitch release];
 	[titleLabel release];
 	[topToolbar release];
@@ -104,38 +105,34 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 - (IBAction)confirmDeleteCurrentText:(id)sender {
 	
 	// If a default text, tell why it can't be deleted. Else, ask user to confirm via an action sheet.
-	
-	// Proceed only if not showing a message.
-	if (!self.deleteTextActionSheet) {
 		
-		UIActionSheet *anActionSheet;
-		if ([self.currentText isDefaultData]) {
-			
-			anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"Can't Delete Examples", nil];
-			
-			// Disable buttons. This action sheet is informational only.
-			anActionSheet.userInteractionEnabled = NO;
-			
-		} else {
-			
-			anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:@"Delete This Text" otherButtonTitles:nil];
-		}
-		[anActionSheet showFromBarButtonItem:self.trashBarButtonItem animated:NO];
-		self.deleteTextActionSheet = anActionSheet;
-		[anActionSheet release];
+	UIActionSheet *anActionSheet;
+	if ([self.currentText isDefaultData]) {
 		
-		// Disable toolbar with this button.
-		self.bottomToolbar.userInteractionEnabled = NO;
+		anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"Can't Delete Examples", nil];
+		
+		// Disable buttons. This action sheet is informational only.
+		anActionSheet.userInteractionEnabled = NO;
+		
+	} else {
+		
+		anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:@"Delete This Text" otherButtonTitles:nil];
 	}
+	[anActionSheet showFromBarButtonItem:self.trashBarButtonItem animated:NO];
+	[anActionSheet release];
+	
+	// Disable toolbar with this button.
+	self.bottomToolbar.userInteractionEnabled = NO;
 }
 
 - (void)deleteCurrentText {
 	
 	// This has no visible transition, but it seems okay since the deletion action sheet takes some time to disappear.
-	NSManagedObjectContext *aManagedObjectContext = [(TextMemoryAppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+	TextMemoryAppDelegate *aTextMemoryAppDelegate = (TextMemoryAppDelegate *)[[UIApplication sharedApplication] delegate];
+	NSManagedObjectContext *aManagedObjectContext = [aTextMemoryAppDelegate managedObjectContext];
 	[aManagedObjectContext deleteObject:self.currentText];
-	NSError *error;
-	[aManagedObjectContext save:&error];
+	[aTextMemoryAppDelegate saveContext];
+	
 	self.currentText = [self introText];
 }
 
@@ -149,20 +146,38 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 
 - (IBAction)editText:(id)sender {
 	
-	EditTextViewController *anEditTextViewController = [(EditTextViewController *)[EditTextViewController alloc] initWithText:self.currentText];
-	anEditTextViewController.delegate = self;
+	// If a default text, tell why it can't be edited. Else, proceed to editing view.
 	
-	// Show the editing view. Instead of the navigation controller's transition, do a fade.
-	CATransition *aTransition = [CATransition animation];
-	//aTransition.duration = 1.0;
-	[self.navigationController.view.layer addAnimation:aTransition forKey:nil];
-	[self.navigationController pushViewController:anEditTextViewController animated:NO];
+	if ([self.currentText isDefaultData]) {
 	
-	[anEditTextViewController release];
+		UIActionSheet *anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"Can't Edit Examples", nil];
+		
+		// Disable buttons. This action sheet is informational only.
+		anActionSheet.userInteractionEnabled = NO;
+		
+		[anActionSheet showFromBarButtonItem:self.editTextBarButtonItem animated:NO];
+		[anActionSheet release];
+		
+		// Disable toolbar with this button.
+		self.bottomToolbar.userInteractionEnabled = NO;
+	} else {
+		
+		EditTextViewController *anEditTextViewController = [(EditTextViewController *)[EditTextViewController alloc] initWithText:self.currentText];
+		anEditTextViewController.delegate = self;
+		
+		// Show the editing view. Instead of the navigation controller's transition, do a fade.
+		CATransition *aTransition = [CATransition animation];
+		aTransition.duration = fadeTransitionDuration;
+		[self.navigationController.view.layer addAnimation:aTransition forKey:nil];
+		[self.navigationController pushViewController:anEditTextViewController animated:NO];
+		
+		[anEditTextViewController release];
+	}
 }
 
 - (void)editTextViewControllerDidFinishEditing:(EditTextViewController *)sender {
 	
+	self.titleLabel.text = self.currentText.title;
 	if (self.showFirstLettersSwitch.on) {
 		[self showFirstLettersOnly];
 	} else {
@@ -332,10 +347,9 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
     // e.g. self.myOutlet = nil;
 	self.popoverController.delegate = nil;
 	self.popoverController = nil;
-	self.deleteTextActionSheet.delegate = nil;
-	self.deleteTextActionSheet = nil;
 	self.bottomToolbar = nil;
 	self.currentTextTextView = nil;
+	self.editTextBarButtonItem = nil;
 	self.showFirstLettersSwitch = nil;
 	self.titleLabel = nil;
 	self.topToolbar = nil;

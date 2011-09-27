@@ -27,6 +27,9 @@
 // Text view for showing the current text.
 @property (nonatomic, retain) IBOutlet UITextView *currentTextTextView;
 
+// Button for editing the current text.
+@property (nonatomic, retain) IBOutlet UIBarButtonItem *editTextBarButtonItem;
+
 @property (nonatomic, retain, readonly) Text *introText;
 
 // A switch controlling whether first letters or full text is shown.
