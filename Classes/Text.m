@@ -57,7 +57,7 @@
 	// Persistent data.
 	NSLog(@"Awake from insert");
 	self.isDefaultData = NO;
-	self.title = @"Default Title";
+	self.title = @"A New Text";
 	self.text = @"This is the default text.";
 }
 

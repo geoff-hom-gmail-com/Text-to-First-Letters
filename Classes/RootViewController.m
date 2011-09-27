@@ -14,14 +14,23 @@
 #import "TextMemoryAppDelegate.h"
 #import "TextsTableViewController.h"
 
+// Alert message when user tries to edit/delete a default text.
+NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.";
+
 // Private category for private methods.
 @interface RootViewController ()
+
+// When the user tries to delete a text, we show an action sheet. We keep a reference to know if a sheet is already showing.
+@property (nonatomic, retain) UIActionSheet *deleteTextActionSheet;
 
 // Once we create this, we'll keep it in memory and just reuse it.
 @property (nonatomic, retain) UIPopoverController *popoverController;
 
 // Start key-value observing.
 - (void)addObservers;
+
+// Delete the current text.
+- (void)deleteCurrentText;
 
 // Stop key-value observing.
 - (void)removeObservers;
@@ -39,8 +48,30 @@
 
 @implementation RootViewController
 
-@synthesize currentText, currentTextTextView, showFirstLettersSwitch, titleBarButtonItem;
-@synthesize popoverController;
+@synthesize bottomToolbar, currentText, currentTextTextView, showFirstLettersSwitch, titleLabel, topToolbar, trashBarButtonItem;
+@synthesize deleteTextActionSheet, popoverController;
+
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	
+	// Currently, only the action sheet for deleting has a tappable button.
+	if (buttonIndex == 0) {
+		
+		[self deleteCurrentText];
+	}
+	self.deleteTextActionSheet = nil;
+	
+	// Re-enable corresponding toolbar. (Currently, the only action sheets that should call this method are for the Delete button.)
+	self.bottomToolbar.userInteractionEnabled = YES;
+}
+
+- (IBAction)addAText:(id)sender {
+	
+	NSManagedObjectContext *aManagedObjectContext = [(TextMemoryAppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+	Text *aText = (Text *)[NSEntityDescription insertNewObjectForEntityForName:@"Text" inManagedObjectContext:aManagedObjectContext];
+	self.currentText = aText;
+	NSError *error;
+	[aManagedObjectContext save:&error];
+}
 
 - (void)addObservers {
 	
@@ -54,15 +85,58 @@
 	
 	self.popoverController.delegate = nil;
 	[popoverController release];
+	self.deleteTextActionSheet.delegate = nil;
+	[deleteTextActionSheet release];
 	
 	[introText_ release];
     
+	[bottomToolbar release];
 	[currentText release];
 	[currentTextTextView release];
 	[showFirstLettersSwitch release];
-	[titleBarButtonItem release];
+	[titleLabel release];
+	[topToolbar release];
+	[trashBarButtonItem release];
 	
 	[super dealloc];
+}
+
+- (IBAction)confirmDeleteCurrentText:(id)sender {
+	
+	// If a default text, tell why it can't be deleted. Else, ask user to confirm via an action sheet.
+	
+	// Proceed only if not showing a message.
+	if (!self.deleteTextActionSheet) {
+		
+		UIActionSheet *anActionSheet;
+		if ([self.currentText isDefaultData]) {
+			
+			anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"Can't Delete Examples", nil];
+			
+			// Disable buttons. This action sheet is informational only.
+			anActionSheet.userInteractionEnabled = NO;
+			
+		} else {
+			
+			anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:@"Delete This Text" otherButtonTitles:nil];
+		}
+		[anActionSheet showFromBarButtonItem:self.trashBarButtonItem animated:NO];
+		self.deleteTextActionSheet = anActionSheet;
+		[anActionSheet release];
+		
+		// Disable toolbar with this button.
+		self.bottomToolbar.userInteractionEnabled = NO;
+	}
+}
+
+- (void)deleteCurrentText {
+	
+	// This has no visible transition, but it seems okay since the deletion action sheet takes some time to disappear.
+	NSManagedObjectContext *aManagedObjectContext = [(TextMemoryAppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+	[aManagedObjectContext deleteObject:self.currentText];
+	NSError *error;
+	[aManagedObjectContext save:&error];
+	self.currentText = [self introText];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -140,13 +214,19 @@
 	// If the current text changed, then update the view's title and text.
 	if ([keyPath isEqualToString:@"currentText"]) {
 		
-		self.titleBarButtonItem.title = self.currentText.title;
+		self.titleLabel.text = self.currentText.title;
 		if (self.showFirstLettersSwitch.on) {
 			[self showFirstLettersOnly];
 		} else {
 			[self showFullText];
 		}
 	}
+}
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
+	
+	// Re-enable corresponding toolbar. (Currently, the only popover controller that should call this method is for the Texts button.)
+	self.topToolbar.userInteractionEnabled = YES;
 }
 
 - (void)removeObservers {
@@ -183,7 +263,6 @@
 		if (!self.popoverController) {
 			
 			UIPopoverController *aPopoverController = [[UIPopoverController alloc] initWithContentViewController:aViewController];
-			//aPopoverController.delegate = self;
 			self.popoverController = aPopoverController;
 			[aPopoverController release];
 		} else {
@@ -192,14 +271,25 @@
 		}
 		[aViewController release];
 		
+		// Resize popover.
+		self.popoverController.popoverContentSize = self.popoverController.contentViewController.contentSizeForViewInPopover;
+		
 		// Present popover.
+		self.popoverController.delegate = self;
 		[self.popoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+		
+		// Disable toolbar (until popover dismissed).
+		self.topToolbar.userInteractionEnabled = NO;
 	}	
 }
 
 - (void)textsTableViewControllerDidSelectText:(TextsTableViewController *)sender {
 	
 	[self.popoverController dismissPopoverAnimated:YES];
+	
+	// Dismissing popover programmatically doesn't call this delegate method. But we do cleanup there, so we need to call it.
+	[self popoverControllerDidDismissPopover:nil];
+	
 	self.currentText = sender.currentText;
 }
 
@@ -242,9 +332,14 @@
     // e.g. self.myOutlet = nil;
 	self.popoverController.delegate = nil;
 	self.popoverController = nil;
+	self.deleteTextActionSheet.delegate = nil;
+	self.deleteTextActionSheet = nil;
+	self.bottomToolbar = nil;
 	self.currentTextTextView = nil;
 	self.showFirstLettersSwitch = nil;
-	self.titleBarButtonItem = nil;
+	self.titleLabel = nil;
+	self.topToolbar = nil;
+	self.trashBarButtonItem = nil;
 }
 
 @end
