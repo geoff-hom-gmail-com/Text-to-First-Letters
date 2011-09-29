@@ -32,8 +32,8 @@
 
 @property (nonatomic, retain, readonly) Text *introText;
 
-// A switch controlling whether first letters or full text is shown.
-@property (nonatomic, retain) IBOutlet UISwitch *showFirstLettersSwitch;
+// A segmented control for whether full text or first letters is shown.
+@property (nonatomic, retain) IBOutlet UISegmentedControl *textToShowSegmentedControl;
 
 // The title of the current text.
 @property (nonatomic, retain) IBOutlet UILabel *titleLabel;
@@ -50,6 +50,9 @@
 // Add a new text and open it for editing.
 - (IBAction)addAText:(id)sender;
 
+// Show text according to the segment selected: full text or first letters.
+- (IBAction)changeTextModeToShow:(UISegmentedControl *)theSegmentedControl;
+
 // User tapped to delete the current text. Ask for confirmation.
 - (IBAction)confirmDeleteCurrentText:(id)sender;
 
@@ -58,6 +61,9 @@
 
 // EditTextViewControllerDelegate method. Since the text may have changed, update the view.
 - (void)editTextViewControllerDidFinishEditing:(EditTextViewController *)sender;
+
+// Pinch in to show first letters. Pinch out to show full text.
+- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)sender;
 
 // UIPopoverControllerDelegate method. Since the popover was dismissed, re-enable the corresponding toolbar.
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController;

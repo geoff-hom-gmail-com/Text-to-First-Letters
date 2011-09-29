@@ -14,11 +14,20 @@
 #import "TextMemoryAppDelegate.h"
 #import "TextsTableViewController.h"
 
-// Alert message when user tries to edit/delete a default text.
-NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.";
+// Title for segmented control segment for showing first letters.
+NSString *firstLetterTextModeTitleString = @"First Letters";
+
+// Title for segmented control segment for showing full text.
+NSString *fullTextModeTitleString = @"Full Text";
 
 // Private category for private methods.
 @interface RootViewController ()
+
+// Segment in segmented control for switching to first-letter mode.
+@property (nonatomic) NSUInteger firstLettersSegmentIndex;
+
+// Segment in segmented control for switching to full-text mode.
+@property (nonatomic) NSUInteger fullTextSegmentIndex;
 
 // Once we create this, we'll keep it in memory and just reuse it.
 @property (nonatomic, retain) UIPopoverController *popoverController;
@@ -38,15 +47,15 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 // Show the entire text (vs. only first letters).
 - (void)showFullText;
 
-// If showing full text, show first letters only. And vice versa. Also adjust the switch.
-- (void)toggleFirstLetters;
+// Make sure the correct title and text is showing. (And that the text's mode is correct.)
+- (void)updateTitleAndTextShowing;
 
 @end
 
 @implementation RootViewController
 
-@synthesize bottomToolbar, currentText, currentTextTextView, editTextBarButtonItem, showFirstLettersSwitch, titleLabel, topToolbar, trashBarButtonItem;
-@synthesize popoverController;
+@synthesize bottomToolbar, currentText, currentTextTextView, editTextBarButtonItem, textToShowSegmentedControl, titleLabel, topToolbar, trashBarButtonItem;
+@synthesize firstLettersSegmentIndex, fullTextSegmentIndex, popoverController;
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	
@@ -81,25 +90,15 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 	[self addObserver:self forKeyPath:@"currentText" options:0 context:nil];
 }
 
-- (void)dealloc {
+- (IBAction)changeTextModeToShow:(UISegmentedControl *)theSegmentedControl {
 	
-	[self removeObservers];
-	
-	self.popoverController.delegate = nil;
-	[popoverController release];
-	
-	[introText_ release];
-    
-	[bottomToolbar release];
-	[currentText release];
-	[currentTextTextView release];
-	[editTextBarButtonItem release];
-	[showFirstLettersSwitch release];
-	[titleLabel release];
-	[topToolbar release];
-	[trashBarButtonItem release];
-	
-	[super dealloc];
+	if (theSegmentedControl.selectedSegmentIndex == self.fullTextSegmentIndex) {
+		
+		[self showFullText];
+	} else if (theSegmentedControl.selectedSegmentIndex == self.firstLettersSegmentIndex) {
+		
+		[self showFirstLettersOnly];
+	}
 }
 
 - (IBAction)confirmDeleteCurrentText:(id)sender {
@@ -123,6 +122,27 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 	
 	// Disable toolbar with this button.
 	self.bottomToolbar.userInteractionEnabled = NO;
+}
+
+- (void)dealloc {
+	
+	[self removeObservers];
+	
+	self.popoverController.delegate = nil;
+	[popoverController release];
+	
+	[introText_ release];
+    
+	[bottomToolbar release];
+	[currentText release];
+	[currentTextTextView release];
+	[editTextBarButtonItem release];
+	[textToShowSegmentedControl release];
+	[titleLabel release];
+	[topToolbar release];
+	[trashBarButtonItem release];
+	
+	[super dealloc];
 }
 
 - (void)deleteCurrentText {
@@ -177,11 +197,21 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 
 - (void)editTextViewControllerDidFinishEditing:(EditTextViewController *)sender {
 	
-	self.titleLabel.text = self.currentText.title;
-	if (self.showFirstLettersSwitch.on) {
-		[self showFirstLettersOnly];
-	} else {
-		[self showFullText];
+	[self updateTitleAndTextShowing];
+}
+
+- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)thePinchGestureRecognizer {
+	
+	// If pinch in (velocity < 0), show first letters. Else, show full text. We'll do this by mimicking the user tapping the segmented control.
+
+	if ((thePinchGestureRecognizer.velocity < 0) && 
+		(self.textToShowSegmentedControl.selectedSegmentIndex != self.firstLettersSegmentIndex)) {
+		
+		self.textToShowSegmentedControl.selectedSegmentIndex = self.firstLettersSegmentIndex;
+	} else if ((thePinchGestureRecognizer.velocity > 0) && 
+			   (self.textToShowSegmentedControl.selectedSegmentIndex != self.fullTextSegmentIndex)) {
+		
+		self.textToShowSegmentedControl.selectedSegmentIndex = self.fullTextSegmentIndex;
 	}
 }
 
@@ -229,12 +259,7 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 	// If the current text changed, then update the view's title and text.
 	if ([keyPath isEqualToString:@"currentText"]) {
 		
-		self.titleLabel.text = self.currentText.title;
-		if (self.showFirstLettersSwitch.on) {
-			[self showFirstLettersOnly];
-		} else {
-			[self showFullText];
-		}
+		[self updateTitleAndTextShowing];
 	}
 }
 
@@ -308,14 +333,13 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 	self.currentText = sender.currentText;
 }
 
-- (void)toggleFirstLetters {
+- (void)updateTitleAndTextShowing {
 	
-	if (self.showFirstLettersSwitch.on) {
-		self.showFirstLettersSwitch.on = NO;
-		[self showFullText];
-	} else {
-		self.showFirstLettersSwitch.on = YES;
+	self.titleLabel.text = self.currentText.title;
+	if (self.textToShowSegmentedControl.selectedSegmentIndex == self.firstLettersSegmentIndex) {
 		[self showFirstLettersOnly];
+	} else {
+		[self showFullText];
 	}
 }
 
@@ -327,14 +351,28 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 	// Start KVO. 
 	[self addObservers];
 	
-	// Set initial text.
-	self.currentText = [self introText];
+	// Set up segmented control for showing first letters.
+	self.fullTextSegmentIndex = 0;
+	self.firstLettersSegmentIndex = 1;
+	[self.textToShowSegmentedControl setTitle:fullTextModeTitleString forSegmentAtIndex:self.fullTextSegmentIndex];
+	[self.textToShowSegmentedControl setTitle:firstLetterTextModeTitleString forSegmentAtIndex:self.firstLettersSegmentIndex];
 	
+	/* For disabling switch's animation. Not currently using a switch.
+	 
 	// Disable the switch's animation, to allow faster work. To do this, we'll add a custom (invisible) button over the switch. When the button is tapped, it will do the work the switch would normally do, except the switch's status will also be set, programmatically, without animation.
 	UIButton *aButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	[aButton addTarget:self action:@selector(toggleFirstLetters) forControlEvents:UIControlEventTouchUpInside];
 	aButton.frame = self.showFirstLettersSwitch.frame;
 	[self.view addSubview:aButton];
+	 */
+	
+	// Add pinch gesture recognizer.
+	UIPinchGestureRecognizer *aPinchGestureRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
+	[self.view addGestureRecognizer:aPinchGestureRecognizer];
+	[aPinchGestureRecognizer release];
+	
+	// Set initial text.
+	self.currentText = [self introText];
 }
 
 - (void)viewDidUnload {
@@ -350,7 +388,7 @@ NSString *triedToEditDefaultTextString = @"The starting texts cannot be changed.
 	self.bottomToolbar = nil;
 	self.currentTextTextView = nil;
 	self.editTextBarButtonItem = nil;
-	self.showFirstLettersSwitch = nil;
+	self.textToShowSegmentedControl = nil;
 	self.titleLabel = nil;
 	self.topToolbar = nil;
 	self.trashBarButtonItem = nil;

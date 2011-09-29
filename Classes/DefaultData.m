@@ -137,6 +137,8 @@ NSString *welcomeTextTitle = @"Welcome";
 	NSURL *mainStoreURL = [[aTextMemoryAppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:mainStoreName];
 	NSPersistentStore *mainPersistentStore = [aPersistentStoreCoordinator persistentStoreForURL:mainStoreURL];
 	[aFetchRequest setAffectedStores:[NSArray arrayWithObject:mainPersistentStore]];
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"isDefaultData_ == YES"]; 
+	[aFetchRequest setPredicate:predicate];
 	NSArray *defaultTextsFromMainStoreArray = [aManagedObjectContext executeFetchRequest:aFetchRequest error:&error];
 	
 	[aFetchRequest release];

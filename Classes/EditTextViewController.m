@@ -104,8 +104,8 @@
 	self.titleAlertView = anAlertView;
 	[anAlertView release];
 	
-	// Show cursor and keyboard.
-	[aTextField becomeFirstResponder];
+	// Show cursor and keyboard. We could use [aTextField becomeFirstResponder], but there's a significant animation delay. The line below results in no delay.
+	[aTextField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 }
 
 - (IBAction)saveEditing:(id)sender {

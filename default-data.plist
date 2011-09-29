@@ -5,7 +5,9 @@
 	<key>Welcome</key>
 	<dict>
 		<key>Text</key>
-		<string>Welcome to Text Memory! (Hmm, I should rename this...TMT?)</string>
+		<string>Welcome to Text Memory Tools!
+		
+This app helps you memorize text using the first-letter method. You can quickly see either the full text or just the first letter of each word.</string>
 	</dict>
 	<key>Example</key>
 	<dict>
