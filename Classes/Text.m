@@ -83,9 +83,13 @@
 	// I could trigger this by kvo on the text property.
 	NSLog(@"Text: createFirstLetterText");
 	
-	// Go through the text, one character at a time. If previous character was a letter and this is also a letter, then replace with a space. Otherwise, keep it.
-	NSString *spaceString = @" ";
-	NSCharacterSet *letterCharacterSet = [NSCharacterSet alphanumericCharacterSet];
+	// Go through the text, one character at a time. If previous character was a letter (or apostrophe) and this is also a letter (or apostrophe), then replace with a dash. Otherwise, keep it.
+	//NSString *spaceString = @" ";
+	NSString *dashString = @"_";
+	NSMutableCharacterSet *letterEtAlMutableCharacterSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
+	[letterEtAlMutableCharacterSet addCharactersInString:@"'"];
+	NSCharacterSet *letterEtAlCharacterSet = [letterEtAlMutableCharacterSet copy];
+	[letterEtAlMutableCharacterSet release];
 	NSMutableString *aMutableFirstLetterText = [NSMutableString stringWithCapacity:self.text.length];
 	BOOL previousCharacterWasLetter = NO;
 	unichar character;
@@ -96,7 +100,7 @@
 		
 		currentCharacterIsLetter = NO;
 		character = [self.text characterAtIndex:i];
-		if ( [letterCharacterSet characterIsMember:character] ) {
+		if ( [letterEtAlCharacterSet characterIsMember:character] ) {
 			currentCharacterIsLetter = YES;
 		}
 		
@@ -106,7 +110,7 @@
 		}
 		
 		if (addSpace) {
-			[aMutableFirstLetterText appendString:spaceString];
+			[aMutableFirstLetterText appendString:dashString];
 		} else {
 			characterToAddString = [NSString stringWithCharacters:&character length:1];
 			[aMutableFirstLetterText appendString:characterToAddString];
@@ -114,6 +118,7 @@
 		
 		previousCharacterWasLetter = currentCharacterIsLetter;
 	}
+	[letterEtAlCharacterSet release];
 	return aMutableFirstLetterText;
 }
 

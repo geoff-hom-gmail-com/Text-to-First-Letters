@@ -63,7 +63,7 @@
 - (void)editTextViewControllerDidFinishEditing:(EditTextViewController *)sender;
 
 // Pinch in to show first letters. Pinch out to show full text.
-- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)sender;
+- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)thePinchGestureRecognizer;
 
 // UIPopoverControllerDelegate method. Since the popover was dismissed, re-enable the corresponding toolbar.
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController;
