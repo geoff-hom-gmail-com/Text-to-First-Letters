@@ -8,6 +8,7 @@
 
 #import "DefaultData.h"
 #import "EditTextViewController.h"
+#import "FontSizeViewController.h"
 #import "RootViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Text.h"
@@ -19,6 +20,8 @@ NSString *firstLetterTextModeTitleString = @"First Letters";
 
 // Title for segmented control segment for showing full text.
 NSString *fullTextModeTitleString = @"Full Text";
+
+NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 
 // Private category for private methods.
 @interface RootViewController ()
@@ -182,7 +185,7 @@ NSString *fullTextModeTitleString = @"Full Text";
 		self.bottomToolbar.userInteractionEnabled = NO;
 	} else {
 		
-		EditTextViewController *anEditTextViewController = [(EditTextViewController *)[EditTextViewController alloc] initWithText:self.currentText];
+		EditTextViewController *anEditTextViewController = [(EditTextViewController *)[EditTextViewController alloc] initWithText:self.currentText contentOffset:self.currentTextTextView.contentOffset font:self.currentTextTextView.font];
 		anEditTextViewController.delegate = self;
 		
 		// Show the editing view. Instead of the navigation controller's transition, do a fade.
@@ -197,7 +200,21 @@ NSString *fullTextModeTitleString = @"Full Text";
 
 - (void)editTextViewControllerDidFinishEditing:(EditTextViewController *)sender {
 	
+	self.currentTextTextView.contentOffset = sender.contentOffset;
 	[self updateTitleAndTextShowing];
+}
+
+- (void)fontSizeViewControllerDidChangeFontSize:(FontSizeViewController *)theFontSizeViewController {
+	
+	NSString *currentFontName = self.currentTextTextView.font.fontName;
+	UIFont *newFont = [UIFont fontWithName:currentFontName size:theFontSizeViewController.currentFontSize];
+	self.currentTextTextView.font = newFont;
+	
+	// Also adjust the width of the text view. And re-center the text view.
+	CGRect newFrame = self.currentTextTextView.frame;
+	newFrame.size.width = [testWidthString sizeWithFont:newFont].width;
+	newFrame.origin.x = (self.view.frame.size.width - newFrame.size.width) / 2;
+	self.currentTextTextView.frame = newFrame;
 }
 
 - (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)thePinchGestureRecognizer {
@@ -287,6 +304,39 @@ NSString *fullTextModeTitleString = @"Full Text";
 - (void)showFullText {
 	
 	self.currentTextTextView.text = self.currentText.text;
+}
+
+- (IBAction)showFontSizePopover:(id)sender {
+
+	if (!self.popoverController.popoverVisible) {
+		
+		// Create the view controller for the popover.
+		FontSizeViewController *aFontSizeViewController = [[FontSizeViewController alloc] init];
+		aFontSizeViewController.delegate = self;
+		aFontSizeViewController.currentFontSize = self.currentTextTextView.font.pointSize;
+		UIViewController *aViewController = aFontSizeViewController;
+		
+		// Create the popover controller, if necessary.
+		if (!self.popoverController) {
+			
+			UIPopoverController *aPopoverController = [[UIPopoverController alloc] initWithContentViewController:aViewController];
+			self.popoverController = aPopoverController;
+			[aPopoverController release];
+		} else {
+			self.popoverController.contentViewController = aViewController;
+		}
+		[aViewController release];
+		
+		// Resize popover.
+		self.popoverController.popoverContentSize = self.popoverController.contentViewController.contentSizeForViewInPopover;
+		
+		// Present popover.
+		self.popoverController.delegate = self;
+		[self.popoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+		
+		// Disable toolbar (until popover dismissed).
+		self.topToolbar.userInteractionEnabled = NO;
+	}	
 }
 
 - (IBAction)showTextsPopover:(id)sender {

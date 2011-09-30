@@ -8,11 +8,15 @@
 
 #import "EditTextViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "RootViewController.h"
 #import "Text.h"
 #import "TextMemoryAppDelegate.h"
 
 // Private category for private methods.
 @interface EditTextViewController ()
+
+// The current font.
+@property (nonatomic, retain) UIFont *currentFont;
 
 // Frame for the text view when no keyboard is showing.
 @property (nonatomic) CGRect defaultTextViewFrame;
@@ -37,8 +41,8 @@
 
 @implementation EditTextViewController
 
-@synthesize defaultTextViewFrame, titleAlertView, titleTextField;
-@synthesize currentText, currentTextTextView, delegate, titleBarButtonItem;
+@synthesize currentFont, defaultTextViewFrame, titleAlertView, titleTextField;
+@synthesize contentOffset, currentText, currentTextTextView, delegate, titleBarButtonItem;
 
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
 	
@@ -62,6 +66,7 @@
 
 - (void)dealloc {
 	
+	[currentFont release];
 	[titleAlertView release];
 	[titleTextField release];
 	
@@ -87,12 +92,14 @@
 	[self.navigationController popViewControllerAnimated:NO];
 }
 
-- (id)initWithText:(Text *)theText {
+- (id)initWithText:(Text *)theText contentOffset:(CGPoint)theContentOffset font:(UIFont *)theFont {
 	
 	self = [super initWithNibName:nil bundle:nil];
 	if (self) {
 		
         self.currentText = theText;
+		self.contentOffset = theContentOffset;
+		self.currentFont = theFont;
     }
     return self;
 }
@@ -167,6 +174,7 @@
 	
 	// Save current Text.
 	self.currentText.text = self.currentTextTextView.text;
+	self.contentOffset = self.currentTextTextView.contentOffset;
 	TextMemoryAppDelegate *aTextMemoryAppDelegate = [[UIApplication sharedApplication] delegate];
 	[aTextMemoryAppDelegate saveContext];
 	
@@ -191,20 +199,21 @@
 	
     [super viewDidLoad];
 	
-	/*
-	// for increasing font size, later
-	CGRect frame = self.currentTextTextView.frame;
-	frame.size.width = self.currentTextTextView.frame.size.width + 80.0;
-	self.currentTextTextView.frame = frame;
-    */
-	
 	// Observe keyboard hide and show notifications to resize the text view appropriately.
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 	
 	self.titleBarButtonItem.title = [NSString stringWithFormat:@"Editing \"%@\"", self.currentText.title];
 	
+	// Set font. Adjust width of text view and keep it centered.
+	self.currentTextTextView.font = self.currentFont;
+	CGRect newFrame = self.currentTextTextView.frame;
+	newFrame.size.width = [testWidthString sizeWithFont:self.currentFont].width;
+	newFrame.origin.x = (self.view.frame.size.width - newFrame.size.width) / 2;
+	self.currentTextTextView.frame = newFrame;
+	
 	self.currentTextTextView.text = self.currentText.text;
+	self.currentTextTextView.contentOffset = self.contentOffset;
 }
 
 - (void)viewDidUnload {

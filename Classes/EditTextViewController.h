@@ -20,6 +20,9 @@
 @interface EditTextViewController : UIViewController <UIAlertViewDelegate, UITextFieldDelegate> {
 }
 
+// Amount to offset the text by when initially displaying.
+@property (nonatomic) CGPoint contentOffset;
+
 // The current text.
 @property (nonatomic, retain) Text *currentText;
 
@@ -38,7 +41,7 @@
 - (IBAction)cancelEditing:(id)sender;
 
 // The designated initializer.
-- (id)initWithText:(Text *)theText;
+- (id)initWithText:(Text *)theText contentOffset:(CGPoint)theContentOffset font:(UIFont *)theFont;
 
 // Show an alert view for renaming the text's title.
 - (IBAction)renameTitle:(id)sender;

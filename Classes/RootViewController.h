@@ -8,11 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import "EditTextViewController.h"
+#import "FontSizeViewController.h"
 #import "TextsTableViewController.h"
 
 @class Text;
 
-@interface RootViewController : UIViewController <EditTextViewControllerDelegate, TextsTableViewDelegate, UIActionSheetDelegate, UIPopoverControllerDelegate> {
+// String for maintaining width of text views. ~1.5 alphabets.
+extern NSString *testWidthString;
+
+@interface RootViewController : UIViewController <EditTextViewControllerDelegate, FontSizeViewControllerDelegate, TextsTableViewDelegate, UIActionSheetDelegate, UIPopoverControllerDelegate> {
 
 @private
     Text *introText_;
@@ -62,11 +66,17 @@
 // EditTextViewControllerDelegate method. Since the text may have changed, update the view.
 - (void)editTextViewControllerDidFinishEditing:(EditTextViewController *)sender;
 
+// FontSizeViewControllerDelegate method. Since the font size changed, update the font in the text view.
+- (void)fontSizeViewControllerDidChangeFontSize:(FontSizeViewController *)theFontSizeViewController;
+
 // Pinch in to show first letters. Pinch out to show full text.
 - (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)thePinchGestureRecognizer;
 
 // UIPopoverControllerDelegate method. Since the popover was dismissed, re-enable the corresponding toolbar.
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController;
+
+// Show/hide popover for changing the font size.
+- (IBAction)showFontSizePopover:(id)sender;
 
 // Show/hide popover for selecting a text.
 - (IBAction)showTextsPopover:(id)sender;
