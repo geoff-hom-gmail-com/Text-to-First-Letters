@@ -41,6 +41,9 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 // Delete the current text.
 - (void)deleteCurrentText;
 
+// Given a text view, set its width to span the test string. Also, keep the view centered.
+- (void)maintainRelativeWidthOfTextView:(UITextView *)theTextView;
+
 // Stop key-value observing.
 - (void)removeObservers;
 
@@ -209,12 +212,7 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 	NSString *currentFontName = self.currentTextTextView.font.fontName;
 	UIFont *newFont = [UIFont fontWithName:currentFontName size:theFontSizeViewController.currentFontSize];
 	self.currentTextTextView.font = newFont;
-	
-	// Also adjust the width of the text view. And re-center the text view.
-	CGRect newFrame = self.currentTextTextView.frame;
-	newFrame.size.width = [testWidthString sizeWithFont:newFont].width;
-	newFrame.origin.x = (self.view.frame.size.width - newFrame.size.width) / 2;
-	self.currentTextTextView.frame = newFrame;
+	[self maintainRelativeWidthOfTextView:self.currentTextTextView];
 }
 
 - (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)thePinchGestureRecognizer {
@@ -269,6 +267,21 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 	}
 
 	return introText_;
+}
+
+- (void)maintainRelativeWidthOfTextView:(UITextView *)theTextView {
+	
+	CGFloat newWidth = [testWidthString sizeWithFont:theTextView.font].width;
+	
+	// Width must be even to avoid subpixel boundaries.
+	if ((int)newWidth % 2 != 0) {
+		newWidth += 1;
+	}
+	
+	CGRect newFrame = theTextView.frame;
+	newFrame.size.width = newWidth;
+	newFrame.origin.x = (self.view.frame.size.width - newFrame.size.width) / 2;
+	theTextView.frame = newFrame;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -407,19 +420,13 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 	[self.textToShowSegmentedControl setTitle:fullTextModeTitleString forSegmentAtIndex:self.fullTextSegmentIndex];
 	[self.textToShowSegmentedControl setTitle:firstLetterTextModeTitleString forSegmentAtIndex:self.firstLettersSegmentIndex];
 	
-	/* For disabling switch's animation. Not currently using a switch.
-	 
-	// Disable the switch's animation, to allow faster work. To do this, we'll add a custom (invisible) button over the switch. When the button is tapped, it will do the work the switch would normally do, except the switch's status will also be set, programmatically, without animation.
-	UIButton *aButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	[aButton addTarget:self action:@selector(toggleFirstLetters) forControlEvents:UIControlEventTouchUpInside];
-	aButton.frame = self.showFirstLettersSwitch.frame;
-	[self.view addSubview:aButton];
-	 */
-	
 	// Add pinch gesture recognizer.
 	UIPinchGestureRecognizer *aPinchGestureRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
 	[self.view addGestureRecognizer:aPinchGestureRecognizer];
 	[aPinchGestureRecognizer release];
+	
+	// Align text view so it doesn't appear to shift later.
+	[self maintainRelativeWidthOfTextView:self.currentTextTextView];
 	
 	// Set initial text.
 	self.currentText = [self introText];

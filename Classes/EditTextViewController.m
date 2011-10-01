@@ -36,6 +36,9 @@
 // Reduce the size of the text view so that it's not obscured by the keyboard. Animate the resize so that it's in sync with the appearance of the keyboard.
 - (void)keyboardWillShow:(NSNotification *)notification;
 
+// Given a text view, set its width to span the test string. Also, keep the view centered. (Also in RootViewController. Could make utility.)
+- (void)maintainRelativeWidthOfTextView:(UITextView *)theTextView;
+
 @end
 
 
@@ -150,6 +153,21 @@
     [UIView commitAnimations];
 }
 
+- (void)maintainRelativeWidthOfTextView:(UITextView *)theTextView {
+	
+	CGFloat newWidth = [testWidthString sizeWithFont:theTextView.font].width;
+	
+	// Width must be even to avoid subpixel boundaries.
+	if ((int)newWidth % 2 != 0) {
+		newWidth += 1;
+	}
+	
+	CGRect newFrame = theTextView.frame;
+	newFrame.size.width = newWidth;
+	newFrame.origin.x = (self.view.frame.size.width - newFrame.size.width) / 2;
+	theTextView.frame = newFrame;
+}
+
 - (IBAction)renameTitle:(id)sender {
 	
 	// In iOS 5.0, UIAlertViewStylePlainTextInput should work. Until then, we'll add a text field to the alert view. The alert's message provides space for the text view. 
@@ -205,12 +223,9 @@
 	
 	self.titleBarButtonItem.title = [NSString stringWithFormat:@"Editing \"%@\"", self.currentText.title];
 	
-	// Set font. Adjust width of text view and keep it centered.
+	// Set font.
 	self.currentTextTextView.font = self.currentFont;
-	CGRect newFrame = self.currentTextTextView.frame;
-	newFrame.size.width = [testWidthString sizeWithFont:self.currentFont].width;
-	newFrame.origin.x = (self.view.frame.size.width - newFrame.size.width) / 2;
-	self.currentTextTextView.frame = newFrame;
+	[self maintainRelativeWidthOfTextView:self.currentTextTextView];
 	
 	self.currentTextTextView.text = self.currentText.text;
 	self.currentTextTextView.contentOffset = self.contentOffset;

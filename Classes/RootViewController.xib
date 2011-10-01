@@ -44,7 +44,7 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<object class="IBUITextView" id="523392110">
 						<reference key="NSNextResponder" ref="766721923"/>
-						<int key="NSvFlags">274</int>
+						<int key="NSvFlags">277</int>
 						<string key="NSFrame">{{177, 44}, {414, 916}}</string>
 						<reference key="NSSuperview" ref="766721923"/>
 						<object class="NSColor" key="IBUIBackgroundColor" id="774121871">
@@ -70,7 +70,7 @@ bm9wcXJzdHV2d3h5emFiY2RlZmdoaWprbG0</string>
 					</object>
 					<object class="IBUIToolbar" id="754082218">
 						<reference key="NSNextResponder" ref="766721923"/>
-						<int key="NSvFlags">266</int>
+						<int key="NSvFlags">290</int>
 						<string key="NSFrameSize">{768, 44}</string>
 						<reference key="NSSuperview" ref="766721923"/>
 						<bool key="IBUIOpaque">NO</bool>
@@ -194,7 +194,7 @@ bm9wcXJzdHV2d3h5emFiY2RlZmdoaWprbG0</string>
 					</object>
 					<object class="IBUILabel" id="635371483">
 						<reference key="NSNextResponder" ref="766721923"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">290</int>
 						<string key="NSFrame">{{119, 9}, {530, 25}}</string>
 						<reference key="NSSuperview" ref="766721923"/>
 						<bool key="IBUIOpaque">NO</bool>
