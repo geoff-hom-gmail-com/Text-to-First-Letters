@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="2"/>
+			<integer value="5"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -79,7 +79,7 @@ bm9wcXJzdHV2d3h5emFiY2RlZmdoaWprbG0</string>
 						<object class="NSMutableArray" key="IBUIItems">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIBarButtonItem" id="784026428">
-								<string key="IBUITitle">Add A Text</string>
+								<string key="IBUITitle">Add a Text</string>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="754082218"/>
@@ -4906,7 +4906,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>RootViewController</string>
 					<string>UIResponder</string>
-					<string>{{141, 0}, {783, 756}}</string>
+					<string>{{42, 0}, {783, 756}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSMutableArray">
 						<bool key="EncodedWithXMLCoder">YES</bool>

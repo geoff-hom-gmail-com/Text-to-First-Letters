@@ -5,16 +5,37 @@
 	<key>Welcome</key>
 	<dict>
 		<key>Text</key>
-		<string>Welcome to Text Memory Tools!
+		<string>Welcome to Text-to-First-Letters, by Geoff Hom!
 		
-This app helps you memorize text using the first-letter method. You can quickly see either the full text or just the first letter of each word.</string>
+This app shows the first letter of each word in a given text. You can see this now by tapping "First Letters" (bottom of the screen). 
+
+One use for this app is to help you memorize a text.
+
+To see an example, tap "Texts" (upper-right).
+
+Geoff may be reached at geoffhom@gmail.com.</string>
 	</dict>
 	<key>Example</key>
 	<dict>
 		<key>Text</key>
-		<string>The quick brown fox jumped over the lazy dog.
-		
-abcdefghijklmnopqrstuvwxyzabcdefghijklm</string>
+		<string>To get a feel for this app, try to memorize these words:
+
+"Four score and seven years ago, our fathers brought forth, on this continent, a new nation, conceived in liberty, and dedicated to the proposition that all men are created equal."
+
+
+Switch between first letters and full text by tapping "First Letters" and "Full Text" (bottom of the screen). Alternatively, you may pinch in/out on the screen.
+
+
+To increase or decrease the font size, tap "Font Size" (upper-right).
+
+
+To add your own text, tap "Add a Text" (upper-left). You will immediately be given a new text. To switch back to this example, tap "Texts" (upper-right). 
+
+
+To edit the title/words of a text, tap "Edit Text" (lower-right).
+
+
+To delete a text, tap the Trash Can (lower-left). You will have to make a second tap to delete the text, so feel free to try it.</string>
 	</dict>
 </dict>
 </plist>
