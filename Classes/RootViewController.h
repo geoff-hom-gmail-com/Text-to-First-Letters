@@ -69,8 +69,11 @@ extern NSString *testWidthString;
 // FontSizeViewControllerDelegate method. Since the font size changed, update the font in the text view.
 - (void)fontSizeViewControllerDidChangeFontSize:(FontSizeViewController *)theFontSizeViewController;
 
+// Double-tap to toggle first letters or full text.
+- (IBAction)handleDoubleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer;
+
 // Pinch in to show first letters. Pinch out to show full text.
-- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)thePinchGestureRecognizer;
+//- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)thePinchGestureRecognizer;
 
 // UIPopoverControllerDelegate method. Since the popover was dismissed, re-enable the corresponding toolbar.
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController;

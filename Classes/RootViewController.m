@@ -9,11 +9,15 @@
 #import "DefaultData.h"
 #import "EditTextViewController.h"
 #import "FontSizeViewController.h"
+#import "OverlayView.h"
 #import "RootViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Text.h"
 #import "TextMemoryAppDelegate.h"
 #import "TextsTableViewController.h"
+
+// Set to YES to show UI for launch image. Can capture in simulator: control key -> Edit menu -> Copy Screen -> in GraphicConverter or Preview, File -> New from clipboard.
+BOOL createLaunchImages = NO;
 
 // Title for segmented control segment for showing first letters.
 NSString *firstLetterTextModeTitleString = @"First Letters";
@@ -215,6 +219,20 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 	[self maintainRelativeWidthOfTextView:self.currentTextTextView];
 }
 
+- (IBAction)handleDoubleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer {
+	
+	// If first letters, show full text. And vice versa.
+	NSLog(@"double tap detected");
+	if (self.textToShowSegmentedControl.selectedSegmentIndex != self.firstLettersSegmentIndex) {
+		
+		self.textToShowSegmentedControl.selectedSegmentIndex = self.firstLettersSegmentIndex;
+	} else {
+		
+		self.textToShowSegmentedControl.selectedSegmentIndex = self.fullTextSegmentIndex;
+	}
+}
+
+/*
 - (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)thePinchGestureRecognizer {
 	
 	// If pinch in (velocity < 0), show first letters. Else, show full text. We'll do this by mimicking the user tapping the segmented control.
@@ -229,6 +247,7 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 		self.textToShowSegmentedControl.selectedSegmentIndex = self.fullTextSegmentIndex;
 	}
 }
+ */
 
 // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -411,25 +430,50 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
     
 	[super viewDidLoad];
 	
-	// Start KVO. 
-	[self addObservers];
+	if (createLaunchImages) {
+		
+		self.topToolbar.items = nil;
+		self.titleLabel.text = @"";
+		self.currentTextTextView.text = @"";
+		self.bottomToolbar.items = nil;
+	} else {
 	
-	// Set up segmented control for showing first letters.
-	self.fullTextSegmentIndex = 0;
-	self.firstLettersSegmentIndex = 1;
-	[self.textToShowSegmentedControl setTitle:fullTextModeTitleString forSegmentAtIndex:self.fullTextSegmentIndex];
-	[self.textToShowSegmentedControl setTitle:firstLetterTextModeTitleString forSegmentAtIndex:self.firstLettersSegmentIndex];
-	
-	// Add pinch gesture recognizer.
-	UIPinchGestureRecognizer *aPinchGestureRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
-	[self.view addGestureRecognizer:aPinchGestureRecognizer];
-	[aPinchGestureRecognizer release];
-	
-	// Align text view so it doesn't appear to shift later.
-	[self maintainRelativeWidthOfTextView:self.currentTextTextView];
-	
-	// Set initial text.
-	self.currentText = [self introText];
+		// Start KVO. 
+		[self addObservers];
+		
+		// Set up segmented control for showing first letters.
+		self.fullTextSegmentIndex = 0;
+		self.firstLettersSegmentIndex = 1;
+		[self.textToShowSegmentedControl setTitle:fullTextModeTitleString forSegmentAtIndex:self.fullTextSegmentIndex];
+		[self.textToShowSegmentedControl setTitle:firstLetterTextModeTitleString forSegmentAtIndex:self.firstLettersSegmentIndex];
+		
+		// Add overlay view on top of all views.
+		CGRect windowMinusBarsFrame = CGRectMake(0, self.currentTextTextView.frame.origin.y, self.view.frame.size.width, self.currentTextTextView.frame.size.height);
+		OverlayView *anOverlayView = [[OverlayView alloc] initWithFrame:windowMinusBarsFrame];
+		anOverlayView.textViewToIgnore = self.currentTextTextView;
+		[self.view addSubview:anOverlayView];
+		
+		/*
+		// Add pinch gesture recognizer.
+		UIPinchGestureRecognizer *aPinchGestureRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
+		//[someView addGestureRecognizer:aPinchGestureRecognizer];
+		[aPinchGestureRecognizer release];
+		 */
+		
+		// Add double-tap gesture recognizer.
+		UITapGestureRecognizer *aDoubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTapGesture:)];
+		aDoubleTapGestureRecognizer.numberOfTapsRequired = 2;
+		[anOverlayView addGestureRecognizer:aDoubleTapGestureRecognizer];
+		[aDoubleTapGestureRecognizer release];
+		
+		[anOverlayView release];
+		
+		// Align text view so it doesn't appear to shift later.
+		[self maintainRelativeWidthOfTextView:self.currentTextTextView];
+		
+		// Set initial text.
+		self.currentText = [self introText];
+	}
 }
 
 - (void)viewDidUnload {

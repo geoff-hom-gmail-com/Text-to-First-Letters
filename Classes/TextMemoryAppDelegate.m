@@ -18,7 +18,7 @@ NSString *mainStoreName = @"Text_Memory.sqlite";
 // Set to YES to skip regular operation and make default-data store.
 BOOL makeDefaultDataStore = NO;
 
-// Set to YES to reset the default data. The user's texts should be unaffected. 
+// Set to YES to force the default data to be restored. The user's texts should be unaffected. 
 BOOL restoreDefaultData = NO;
 
 @implementation TextMemoryAppDelegate
@@ -36,10 +36,19 @@ BOOL restoreDefaultData = NO;
 		[DefaultData makeStore];
 	} else {
 		
-		if (restoreDefaultData) {
-			[DefaultData restore];
-		}
-		
+		// If the main store exists, then we can restore or check its default data.
+		NSURL *mainStoreURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:mainStoreName];
+		NSString *mainStorePath = [mainStoreURL path];
+		NSFileManager *aFileManager = [[NSFileManager alloc] init];
+		if ([aFileManager fileExistsAtPath:mainStorePath]) {
+			if (restoreDefaultData) {
+				[DefaultData restore];
+			} else {
+				[DefaultData checkMainStore];
+			}			
+		} 
+		[aFileManager release];
+				
 		// Add navigation controller with our root view controller.
 		RootViewController *aRootViewController = [[RootViewController alloc] init]; 
 		UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:aRootViewController];
@@ -186,7 +195,7 @@ BOOL restoreDefaultData = NO;
 	if (copyDefaultData) {
 		
 		NSLog(@"Copying default data to main store.");
-		[DefaultData restore];
+		[DefaultData copyToMainStore];
 	}
     
     return persistentStoreCoordinator_;
@@ -238,6 +247,16 @@ BOOL restoreDefaultData = NO;
             abort();
         } 
     }
+}
+
++ (NSNumber *)versionNumber {
+	
+	NSString *versionNumberString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+	NSNumberFormatter *aNumberFormatter = [[NSNumberFormatter alloc] init];
+	[aNumberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	NSNumber *aVersionNumber = [aNumberFormatter numberFromString:versionNumberString];
+	[aNumberFormatter release];
+	return aVersionNumber;
 }
 
 @end

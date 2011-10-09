@@ -24,6 +24,8 @@ NSString *welcomeTextTitle = @"Welcome";
 
 @implementation DefaultData
 
+@dynamic versionNumber;
+
 + (void)addDefaultData:(NSManagedObjectContext *)theManagedObjectContext {
 	
 	// Get the default data from the default-data property list.
@@ -71,43 +73,28 @@ NSString *welcomeTextTitle = @"Welcome";
 	NSLog(@"Default data added from property list to store.");
 }
 
-+ (void)makeStore {
++ (void)checkMainStore {
 	
-	NSLog(@"Making default-data store.");
-	
-	// Delete existing default-data store, if any.
-	NSFileManager *aFileManager = [[NSFileManager alloc] init];
+	// Fetch version from main store.
+	NSFetchRequest *aFetchRequest = [[NSFetchRequest alloc] init];
 	TextMemoryAppDelegate *aTextMemoryAppDelegate = [[UIApplication sharedApplication] delegate];
-	NSURL *documentDirectoryURL = [aTextMemoryAppDelegate applicationDocumentsDirectory];
-	NSURL *defaultStoreURL = [documentDirectoryURL URLByAppendingPathComponent:defaultDataStoreName];
-	BOOL deletionResult = [aFileManager removeItemAtURL:defaultStoreURL error:nil];
-	NSLog(@"Deleted previous default-data store from application's document directory: %d", deletionResult);
-	[aFileManager release];
+	NSManagedObjectContext *aManagedObjectContext = [aTextMemoryAppDelegate managedObjectContext];
+	NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"DefaultData" inManagedObjectContext:aManagedObjectContext];
+	[aFetchRequest setEntity:entityDescription];
+	NSError *error;
+	NSArray *defaultDataArray = [aManagedObjectContext executeFetchRequest:aFetchRequest error:&error];
+	DefaultData *defaultData = [defaultDataArray objectAtIndex:0];
+	[aFetchRequest release];
 	
-	// Remove the main store from the persistent store coordinator.
-	NSURL *mainStoreURL = [documentDirectoryURL URLByAppendingPathComponent:mainStoreName];
-	NSPersistentStoreCoordinator *aPersistentStoreCoordinator = [aTextMemoryAppDelegate persistentStoreCoordinator];
-	NSPersistentStore *mainPersistentStore = [aPersistentStoreCoordinator persistentStoreForURL:mainStoreURL];
-	[aPersistentStoreCoordinator removePersistentStore:mainPersistentStore error:nil];
+	// Get current version.
+	NSNumber *aCurrentVersionNumber = [TextMemoryAppDelegate versionNumber];
 	
-	// Add the default-data store to the persistent store coordinator.
-	NSError *error = nil;
-	NSPersistentStore *defaultPersistentStore = [aPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:defaultStoreURL options:nil error:&error];
-	if (!defaultPersistentStore) {
-		NSLog(@"Unresolved error making default store: %@, %@", error, [error userInfo]);
-	} else {
-		NSLog(@"Default store added: %@", [defaultStoreURL path]);
+	if ([aCurrentVersionNumber compare:defaultData.versionNumber] == NSOrderedAscending) {
+		[DefaultData restore];
 	}
-	
-	// Populate the store.
-	[DefaultData addDefaultData:[aTextMemoryAppDelegate managedObjectContext]];
-	
-	// Remove the default-data store and add back the main store.
-	[aPersistentStoreCoordinator removePersistentStore:defaultPersistentStore error:nil];
-	[aPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:mainStoreURL options:nil error:nil];
 }
 
-+ (void)restore {
++ (void)copyToMainStore {
 	
 	// Summary: Get texts from default-data store. Delete default texts from main store. Copy texts from default-data store to main store.
 	
@@ -159,8 +146,67 @@ NSString *welcomeTextTitle = @"Welcome";
 	// Remove default-data store from coordinator.
 	[aPersistentStoreCoordinator removePersistentStore:defaultDataPersistentStore error:nil];
 	
+	// Check for version number in main store. If not there, add. Else, update.
+	aFetchRequest = [[NSFetchRequest alloc] init];
+	entityDescription = [NSEntityDescription entityForName:@"DefaultData" inManagedObjectContext:aManagedObjectContext];
+	[aFetchRequest setEntity:entityDescription];
+	NSArray *defaultDataArray = [aManagedObjectContext executeFetchRequest:aFetchRequest error:&error];
+	[aFetchRequest release];
+	DefaultData *aDefaultData;
+	if (defaultDataArray.count == 0) {
+		aDefaultData = (DefaultData *)[NSEntityDescription insertNewObjectForEntityForName:@"DefaultData" inManagedObjectContext:aManagedObjectContext];
+	} else {
+		aDefaultData = [defaultDataArray objectAtIndex:0];
+	}
+	aDefaultData.versionNumber = [TextMemoryAppDelegate versionNumber];
+	NSLog(@"Version number:%@", aDefaultData.versionNumber);
+	
 	// Save.
 	[aManagedObjectContext save:&error];
+	
+	NSLog(@"Default data copied to main store.");
+}
+
++ (void)makeStore {
+	
+	NSLog(@"Making default-data store.");
+	
+	// Delete existing default-data store, if any.
+	NSFileManager *aFileManager = [[NSFileManager alloc] init];
+	TextMemoryAppDelegate *aTextMemoryAppDelegate = [[UIApplication sharedApplication] delegate];
+	NSURL *documentDirectoryURL = [aTextMemoryAppDelegate applicationDocumentsDirectory];
+	NSURL *defaultStoreURL = [documentDirectoryURL URLByAppendingPathComponent:defaultDataStoreName];
+	BOOL deletionResult = [aFileManager removeItemAtURL:defaultStoreURL error:nil];
+	NSLog(@"Deleted previous default-data store from application's document directory: %d", deletionResult);
+	[aFileManager release];
+	
+	// Remove the main store from the persistent store coordinator.
+	NSURL *mainStoreURL = [documentDirectoryURL URLByAppendingPathComponent:mainStoreName];
+	NSPersistentStoreCoordinator *aPersistentStoreCoordinator = [aTextMemoryAppDelegate persistentStoreCoordinator];
+	NSPersistentStore *mainPersistentStore = [aPersistentStoreCoordinator persistentStoreForURL:mainStoreURL];
+	[aPersistentStoreCoordinator removePersistentStore:mainPersistentStore error:nil];
+	
+	// Add the default-data store to the persistent store coordinator.
+	NSError *error = nil;
+	NSPersistentStore *defaultPersistentStore = [aPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:defaultStoreURL options:nil error:&error];
+	if (!defaultPersistentStore) {
+		NSLog(@"Unresolved error making default store: %@, %@", error, [error userInfo]);
+	} else {
+		NSLog(@"Default store added: %@", [defaultStoreURL path]);
+	}
+	
+	// Populate the store.
+	[DefaultData addDefaultData:[aTextMemoryAppDelegate managedObjectContext]];
+	
+	// Remove the default-data store and add back the main store.
+	[aPersistentStoreCoordinator removePersistentStore:defaultPersistentStore error:nil];
+	[aPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:mainStoreURL options:nil error:nil];
+}
+
++ (void)restore {
+	
+	NSLog(@"Restoring default data to main store.");
+	[DefaultData copyToMainStore];
 }
 
 @end

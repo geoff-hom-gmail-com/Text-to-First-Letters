@@ -44,5 +44,8 @@ extern BOOL restoreDefaultData;
 // Save the main managed object context to disk.
 - (void)saveContext;
 
+// Return the current version number.
++ (NSNumber *)versionNumber;
+
 @end
 

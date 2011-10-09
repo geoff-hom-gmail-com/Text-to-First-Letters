@@ -2,6 +2,8 @@
 //  DefaultData.h
 //  Text Memory
 //
+//  Currently, the only instance variable here is the version number. The actual default data is all Texts.
+//
 //  Created by Geoffrey Hom on 9/20/11.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
@@ -14,8 +16,17 @@ extern NSString *defaultDataStoreName;
 // Title of the text to show when the app is first started.
 extern NSString *welcomeTextTitle;
 
-@interface DefaultData : NSObject {
+@interface DefaultData : NSManagedObject {
 }
+
+// The app version when the default data was last updated in the main store.
+@property (nonatomic, retain) NSNumber *versionNumber;
+
+// Check the current app version vs the version when the default data was last updated in the main store. If the current version is greater, then update the default data.
++ (void)checkMainStore;
+
+// Copy the default data from the default-data store to the main store. Assumes main store may be empty.
++ (void)copyToMainStore;
 
 /* 
  (For developers.) Make the Core Data store for default data by parsing a property list. 
