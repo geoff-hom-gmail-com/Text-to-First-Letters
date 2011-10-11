@@ -89,7 +89,12 @@ NSString *welcomeTextTitle = @"Welcome";
 	// Get current version.
 	NSNumber *aCurrentVersionNumber = [TextMemoryAppDelegate versionNumber];
 	
-	if ([aCurrentVersionNumber compare:defaultData.versionNumber] == NSOrderedAscending) {
+	// Check if current version > version from main store.
+	if ([aCurrentVersionNumber compare:defaultData.versionNumber] == NSOrderedDescending) {
+		
+		NSLog(@"Newer version detected: updating default data.");
+		NSLog(@"Current version number:%@", aCurrentVersionNumber);
+		NSLog(@"Version number from main store:%@", defaultData.versionNumber);
 		[DefaultData restore];
 	}
 }

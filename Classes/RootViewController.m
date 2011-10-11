@@ -221,8 +221,8 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 
 - (IBAction)handleDoubleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer {
 	
-	// If first letters, show full text. And vice versa.
-	NSLog(@"double tap detected");
+	// If not showing first letters, show them. Else, show full text.
+	
 	if (self.textToShowSegmentedControl.selectedSegmentIndex != self.firstLettersSegmentIndex) {
 		
 		self.textToShowSegmentedControl.selectedSegmentIndex = self.firstLettersSegmentIndex;

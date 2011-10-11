@@ -7,9 +7,9 @@
 		<key>Text</key>
 		<string>Welcome to Text-to-First-Letters, by Geoff Hom!
 		
-This app shows the first letter of each word in a given text. You can see this now by tapping "First Letters" (bottom of the screen). 
+Text-to-First-Letters is a tool for showing the first letter of each word in a given text. You can see this now by tapping "First Letters" (bottom of the screen). 
 
-One use for this app is to help you memorize a text.
+One use for this app is to help you memorize a text. When you can recite a text by seeing only the first letter of each word, then the text should effectively be in your head.
 
 To see an example, tap "Texts" (upper-right).
 
@@ -19,9 +19,11 @@ Geoff may be reached at geoffhom@gmail.com.</string>
 	<dict>
 		<key>Text</key>
 		<string>To get a feel for this app, try to memorize these words:
+		
   "Four score and seven years ago, our fathers brought forth, on this continent, a new nation, conceived in liberty, and dedicated to the proposition that all men are created equal."
 
-Switch between first letters and full text by tapping "First Letters" and "Full Text" (bottom of the screen). Alternatively, you may pinch in/out on the screen.
+
+Switch between first letters and full text by tapping "First Letters" and "Full Text" (bottom of the screen). Alternatively, you may double-tap in the margins outside the text.
 
 To increase or decrease the font size, tap "Font Size" (upper-right).
 
