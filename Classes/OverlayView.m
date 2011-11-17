@@ -43,16 +43,21 @@
 	BOOL answer;
 	if (self.textViewToIgnore) {
 		
-		// If the text is longer than the text view, use the text view's height. Also, assume the actual text starts at the text view's origin.
+		// If the text is longer than the text view, use the text view's height. 
 		CGSize textSize = self.textViewToIgnore.contentSize;
 		if (textSize.height > self.textViewToIgnore.frame.size.height) {
 			textSize.height = self.textViewToIgnore.frame.size.height;
 		}
-		CGRect actualTextRect = CGRectMake(0, 0, textSize.width, textSize.height);
-		actualTextRect = [self convertRect:actualTextRect fromView:self.textViewToIgnore];
 		
+		// Assume the actual text starts at the text view's origin. 
+		CGPoint newOrigin = [self convertPoint:CGPointMake(0, 0) fromView:self.textViewToIgnore];
+		
+		// If the text is longer than the text view, then the converted y-coordinate will be off. Assume the overlay and the text view start at the same y-coordinate, so the y should be 0.
+		CGRect actualTextRect = CGRectMake(newOrigin.x, 0, textSize.width, textSize.height);
+		
+		//NSLog(@"new origin:%@", NSStringFromCGPoint(newOrigin) );
 		//NSLog(@"point:%@", NSStringFromCGPoint(point) );
-		//NSLog(@"OV pI wE:%@", NSStringFromCGSize(textSize) );
+		//NSLog(@"textSize:%@", NSStringFromCGSize(textSize) );
 		//NSLog(@"actualTextRect:%@", NSStringFromCGRect(actualTextRect) );
 		
 		if (CGRectContainsPoint(actualTextRect, point) ) {
