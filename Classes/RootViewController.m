@@ -19,6 +19,15 @@
 // Set to YES to show UI for launch image. Can capture in simulator: control key -> Edit menu -> Copy Screen -> in GraphicConverter or Preview, File -> New from clipboard.
 BOOL createLaunchImages = NO;
 
+// Title for action-sheet button for adding a new text.
+NSString *addTextTitleString = @"Add a New Text";
+
+// Title for action-sheet button for deleting text.
+NSString *deleteTextTitleString = @"Delete This Text";
+
+// Title for action-sheet button for editing text.
+NSString *editTextTitleString = @"Edit Current Title and Text";
+
 // Title for segmented control segment for showing first letters.
 NSString *firstLetterTextModeTitleString = @"First Letters";
 
@@ -39,11 +48,17 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 // Once we create this, we'll keep it in memory and just reuse it.
 @property (nonatomic, retain) UIPopoverController *popoverController;
 
+// Add a new text and show it.
+- (void)addANewText;
+
 // Start key-value observing.
 - (void)addObservers;
 
 // Delete the current text.
 - (void)deleteCurrentText;
+
+// Go to editing view for the current text.
+- (void)editCurrentText;
 
 // Given a text view, set its width to span the test string. Also, keep the view centered.
 - (void)maintainRelativeWidthOfTextView:(UITextView *)theTextView;
@@ -64,22 +79,33 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 
 @implementation RootViewController
 
-@synthesize bottomToolbar, currentText, currentTextTextView, editTextBarButtonItem, textToShowSegmentedControl, titleLabel, topToolbar, trashBarButtonItem;
+@synthesize addTextBarButtonItem, bottomToolbar, currentText, currentTextTextView, editTextBarButtonItem, textToShowSegmentedControl, titleLabel, topToolbar, trashBarButtonItem;
 @synthesize firstLettersSegmentIndex, fullTextSegmentIndex, popoverController;
 
-- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+- (void)actionSheet:(UIActionSheet *)theActionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	
-	// Currently, only the action sheet for deleting has a tappable button.
-	if (buttonIndex == 0) {
+	// Check the title of the button index. Act appropriately.
+	if (buttonIndex != -1) {
 		
-		[self deleteCurrentText];
+		NSString *buttonTitle = [theActionSheet buttonTitleAtIndex:buttonIndex];
+		if ( [buttonTitle isEqualToString:editTextTitleString] ) {
+			
+			[self editCurrentText];
+		} else if ( [buttonTitle isEqualToString:addTextTitleString] ) {
+			
+			[self addANewText];
+		} else if ( [buttonTitle isEqualToString:deleteTextTitleString] ) {
+			
+			[self deleteCurrentText];
+		}
 	}
 	
-	// Re-enable corresponding toolbar. (Currently, the only action sheets that should call this method are for buttons on the bottom toolbar.)
+	// Re-enable toolbars, in case they were disabled.
+	self.topToolbar.userInteractionEnabled = YES;
 	self.bottomToolbar.userInteractionEnabled = YES;
 }
 
-- (IBAction)addAText:(id)sender {
+- (void)addANewText {
 	
 	// Add text and save.
 	TextMemoryAppDelegate *aTextMemoryAppDelegate = (TextMemoryAppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -111,6 +137,18 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 	}
 }
 
+- (IBAction)confirmAddText:(id)sender {
+	
+	// Ask user to confirm/choose via an action sheet.
+	UIActionSheet *anActionSheet;
+	anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:addTextTitleString, nil];
+	[anActionSheet showFromBarButtonItem:self.addTextBarButtonItem animated:NO];
+	[anActionSheet release];
+	
+	// Disable toolbar with this button.
+	self.topToolbar.userInteractionEnabled = NO;
+}
+
 - (IBAction)confirmDeleteCurrentText:(id)sender {
 	
 	// If a default text, tell why it can't be deleted. Else, ask user to confirm via an action sheet.
@@ -125,13 +163,36 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 		
 	} else {
 		
-		anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:@"Delete This Text" otherButtonTitles:nil];
+		anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:deleteTextTitleString otherButtonTitles:nil];
 	}
 	[anActionSheet showFromBarButtonItem:self.trashBarButtonItem animated:NO];
 	[anActionSheet release];
 	
 	// Disable toolbar with this button.
 	self.bottomToolbar.userInteractionEnabled = NO;
+}
+
+- (IBAction)confirmEditCurrentText:(id)sender {
+	
+	// If a default text, tell why it can't be edited. Else, ask user to confirm/choose via an action sheet.
+	
+	UIActionSheet *anActionSheet;
+	if ([self.currentText isDefaultData]) {
+		
+		anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"Can't Edit Examples", nil];
+		
+		// Disable buttons. This action sheet is informational only.
+		anActionSheet.userInteractionEnabled = NO;
+		
+	} else {
+		
+		anActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:editTextTitleString, nil];
+	}
+	[anActionSheet showFromBarButtonItem:self.editTextBarButtonItem animated:NO];
+	[anActionSheet release];
+	
+	// Disable toolbar with this button.
+	self.topToolbar.userInteractionEnabled = NO;
 }
 
 - (void)dealloc {
@@ -143,6 +204,7 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 	
 	[introText_ release];
     
+	[addTextBarButtonItem release];
 	[bottomToolbar release];
 	[currentText release];
 	[currentTextTextView release];
@@ -172,6 +234,20 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
     [super didReceiveMemoryWarning];
     
     // Release any cached data, images, etc. that aren't in use.
+}
+
+- (void)editCurrentText {
+	
+	EditTextViewController *anEditTextViewController = [(EditTextViewController *)[EditTextViewController alloc] initWithText:self.currentText contentOffset:self.currentTextTextView.contentOffset font:self.currentTextTextView.font];
+	anEditTextViewController.delegate = self;
+	
+	// Show the editing view. Instead of the navigation controller's transition, do a fade.
+	CATransition *aTransition = [CATransition animation];
+	aTransition.duration = fadeTransitionDuration;
+	[self.navigationController.view.layer addAnimation:aTransition forKey:nil];
+	[self.navigationController pushViewController:anEditTextViewController animated:NO];
+	
+	[anEditTextViewController release];
 }
 
 - (IBAction)editText:(id)sender {
@@ -486,6 +562,7 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
     // e.g. self.myOutlet = nil;
 	self.popoverController.delegate = nil;
 	self.popoverController = nil;
+	self.addTextBarButtonItem = nil;
 	self.bottomToolbar = nil;
 	self.currentTextTextView = nil;
 	self.editTextBarButtonItem = nil;

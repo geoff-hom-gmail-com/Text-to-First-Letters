@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="5"/>
+			<integer value="2"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -78,8 +78,20 @@ bm9wcXJzdHV2d3h5emFiY2RlZmdoaWprbG0</string>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<object class="NSMutableArray" key="IBUIItems">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBUIBarButtonItem" id="513401996">
+								<string key="IBUITitle">Texts</string>
+								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+								<int key="IBUIStyle">1</int>
+								<reference key="IBUIToolbar" ref="754082218"/>
+							</object>
 							<object class="IBUIBarButtonItem" id="784026428">
-								<string key="IBUITitle">Add a Text</string>
+								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+								<int key="IBUIStyle">1</int>
+								<reference key="IBUIToolbar" ref="754082218"/>
+								<int key="IBUISystemItemIdentifier">4</int>
+							</object>
+							<object class="IBUIBarButtonItem" id="69437449">
+								<string key="IBUITitle">Edit</string>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="754082218"/>
@@ -91,12 +103,6 @@ bm9wcXJzdHV2d3h5emFiY2RlZmdoaWprbG0</string>
 							</object>
 							<object class="IBUIBarButtonItem" id="481905089">
 								<string key="IBUITitle">Font Size</string>
-								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<int key="IBUIStyle">1</int>
-								<reference key="IBUIToolbar" ref="754082218"/>
-							</object>
-							<object class="IBUIBarButtonItem" id="513401996">
-								<string key="IBUITitle">Texts</string>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="754082218"/>
@@ -184,11 +190,11 @@ bm9wcXJzdHV2d3h5emFiY2RlZmdoaWprbG0</string>
 								<reference key="IBUIToolbar" ref="421974764"/>
 								<int key="IBUISystemItemIdentifier">5</int>
 							</object>
-							<object class="IBUIBarButtonItem" id="69437449">
-								<string key="IBUITitle">Edit Text</string>
+							<object class="IBUIBarButtonItem" id="141788584">
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<int key="IBUIStyle">1</int>
+								<float key="IBUIWidth">76</float>
 								<reference key="IBUIToolbar" ref="421974764"/>
+								<int key="IBUISystemItemIdentifier">6</int>
 							</object>
 						</object>
 					</object>
@@ -4650,22 +4656,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">editText:</string>
-						<reference key="source" ref="69437449"/>
-						<reference key="destination" ref="841351856"/>
-					</object>
-					<int key="connectionID">42</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">addAText:</string>
-						<reference key="source" ref="784026428"/>
-						<reference key="destination" ref="841351856"/>
-					</object>
-					<int key="connectionID">43</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">confirmDeleteCurrentText:</string>
 						<reference key="source" ref="10711532"/>
 						<reference key="destination" ref="841351856"/>
@@ -4737,6 +4727,30 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					</object>
 					<int key="connectionID">72</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">confirmEditCurrentText:</string>
+						<reference key="source" ref="69437449"/>
+						<reference key="destination" ref="841351856"/>
+					</object>
+					<int key="connectionID">73</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">confirmAddText:</string>
+						<reference key="source" ref="784026428"/>
+						<reference key="destination" ref="841351856"/>
+					</object>
+					<int key="connectionID">74</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">addTextBarButtonItem</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="784026428"/>
+					</object>
+					<int key="connectionID">75</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -4764,9 +4778,9 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="754082218"/>
-							<reference ref="421974764"/>
 							<reference ref="635371483"/>
 							<reference ref="523392110"/>
+							<reference ref="421974764"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -4780,10 +4794,11 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="object" ref="754082218"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="513401996"/>
 							<reference ref="784026428"/>
 							<reference ref="352237883"/>
 							<reference ref="481905089"/>
+							<reference ref="513401996"/>
+							<reference ref="69437449"/>
 						</object>
 						<reference key="parent" ref="766721923"/>
 					</object>
@@ -4802,29 +4817,19 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="object" ref="421974764"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="69437449"/>
 							<reference ref="175929916"/>
-							<reference ref="10711532"/>
 							<reference ref="966601196"/>
 							<reference ref="721562630"/>
 							<reference ref="275131949"/>
 							<reference ref="482384007"/>
+							<reference ref="10711532"/>
+							<reference ref="141788584"/>
 						</object>
 						<reference key="parent" ref="766721923"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">37</int>
-						<reference key="object" ref="69437449"/>
-						<reference key="parent" ref="421974764"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">39</int>
 						<reference key="object" ref="175929916"/>
-						<reference key="parent" ref="421974764"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">40</int>
-						<reference key="object" ref="10711532"/>
 						<reference key="parent" ref="421974764"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -4871,6 +4876,21 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="object" ref="481905089"/>
 						<reference key="parent" ref="754082218"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">37</int>
+						<reference key="object" ref="69437449"/>
+						<reference key="parent" ref="754082218"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">40</int>
+						<reference key="object" ref="10711532"/>
+						<reference key="parent" ref="421974764"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">76</int>
+						<reference key="object" ref="141788584"/>
+						<reference key="parent" ref="421974764"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -4901,12 +4921,13 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<string>65.IBPluginDependency</string>
 					<string>67.IBPluginDependency</string>
 					<string>71.IBPluginDependency</string>
+					<string>76.IBPluginDependency</string>
 				</object>
 				<object class="NSMutableArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>RootViewController</string>
 					<string>UIResponder</string>
-					<string>{{42, 0}, {783, 756}}</string>
+					<string>{{206, 0}, {783, 756}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSMutableArray">
 						<bool key="EncodedWithXMLCoder">YES</bool>
@@ -4924,13 +4945,13 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">AQAAAABEcAAAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAAAAAAAAxHZAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABDVgAAxG+AAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAABDMQAAxG+AAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -4942,6 +4963,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">P4AAAL+AAABDfwAAwgAAAA</bytes>
 					</object>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -4966,7 +4988,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">72</int>
+			<int key="maxID">76</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5059,10 +5081,11 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addAText:</string>
 							<string>changeTextModeToShow:</string>
+							<string>confirmAddText:</string>
 							<string>confirmDeleteCurrentText:</string>
-							<string>editText:</string>
+							<string>confirmEditCurrentText:</string>
 							<string>editTextViewControllerDidFinishEditing:</string>
-							<string>handlePinchGesture:</string>
+							<string>handleDoubleTapGesture:</string>
 							<string>showFontSizePopover:</string>
 							<string>showTextsPopover:</string>
 							<string>textsTableViewControllerDidSelectText:</string>
@@ -5073,8 +5096,9 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>UISegmentedControl</string>
 							<string>id</string>
 							<string>id</string>
+							<string>id</string>
 							<string>EditTextViewController</string>
-							<string>UIPinchGestureRecognizer</string>
+							<string>UITapGestureRecognizer</string>
 							<string>id</string>
 							<string>id</string>
 							<string>TextsTableViewController</string>
@@ -5086,10 +5110,11 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addAText:</string>
 							<string>changeTextModeToShow:</string>
+							<string>confirmAddText:</string>
 							<string>confirmDeleteCurrentText:</string>
-							<string>editText:</string>
+							<string>confirmEditCurrentText:</string>
 							<string>editTextViewControllerDidFinishEditing:</string>
-							<string>handlePinchGesture:</string>
+							<string>handleDoubleTapGesture:</string>
 							<string>showFontSizePopover:</string>
 							<string>showTextsPopover:</string>
 							<string>textsTableViewControllerDidSelectText:</string>
@@ -5105,11 +5130,15 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="candidateClassName">UISegmentedControl</string>
 							</object>
 							<object class="IBActionInfo">
+								<string key="name">confirmAddText:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
 								<string key="name">confirmDeleteCurrentText:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
-								<string key="name">editText:</string>
+								<string key="name">confirmEditCurrentText:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
@@ -5117,8 +5146,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="candidateClassName">EditTextViewController</string>
 							</object>
 							<object class="IBActionInfo">
-								<string key="name">handlePinchGesture:</string>
-								<string key="candidateClassName">UIPinchGestureRecognizer</string>
+								<string key="name">handleDoubleTapGesture:</string>
+								<string key="candidateClassName">UITapGestureRecognizer</string>
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">showFontSizePopover:</string>
@@ -5138,6 +5167,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>addTextBarButtonItem</string>
 							<string>bottomToolbar</string>
 							<string>currentTextTextView</string>
 							<string>editTextBarButtonItem</string>
@@ -5148,6 +5178,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIBarButtonItem</string>
 							<string>UIToolbar</string>
 							<string>UITextView</string>
 							<string>UIBarButtonItem</string>
@@ -5161,6 +5192,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>addTextBarButtonItem</string>
 							<string>bottomToolbar</string>
 							<string>currentTextTextView</string>
 							<string>editTextBarButtonItem</string>
@@ -5171,6 +5203,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addTextBarButtonItem</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">bottomToolbar</string>
 								<string key="candidateClassName">UIToolbar</string>
@@ -5370,14 +5406,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">UIPinchGestureRecognizer</string>
-					<string key="superclassName">UIGestureRecognizer</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBFrameworkSource</string>
-						<string key="minorKey">UIKit.framework/Headers/UIPinchGestureRecognizer.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">UIResponder</string>
 					<string key="superclassName">NSObject</string>
 					<reference key="sourceIdentifier" ref="786211723"/>
@@ -5420,6 +5448,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">UIKit.framework/Headers/UITableViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UITapGestureRecognizer</string>
+					<string key="superclassName">UIGestureRecognizer</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBFrameworkSource</string>
+						<string key="minorKey">UIKit.framework/Headers/UITapGestureRecognizer.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -5509,7 +5545,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 			<integer value="3100" key="NS.object.0"/>
 		</object>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
-		<string key="IBDocument.LastKnownRelativeProjectPath">../Text Memory.xcodeproj</string>
+		<string key="IBDocument.LastKnownRelativeProjectPath">../Text-to-First-Letters.xcodeproj</string>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<string key="IBCocoaTouchPluginVersion">141</string>
 	</data>

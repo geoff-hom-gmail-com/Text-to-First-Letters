@@ -22,6 +22,9 @@ extern NSString *testWidthString;
     Text *introText_;
 }
 
+// Button for adding a text.
+@property (nonatomic, retain) IBOutlet UIBarButtonItem *addTextBarButtonItem;
+
 // Toolbar at the bottom of the screen.
 @property (nonatomic, retain) IBOutlet UIToolbar *bottomToolbar;
 
@@ -51,17 +54,17 @@ extern NSString *testWidthString;
 // UIActionSheetDelegate method. Since the action sheet was dismissed, clear its reference. Also check if the delete button was tapped.
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex;
 
-// Add a new text and open it for editing.
-- (IBAction)addAText:(id)sender;
-
 // Show text according to the segment selected: full text or first letters.
 - (IBAction)changeTextModeToShow:(UISegmentedControl *)theSegmentedControl;
+
+// User tapped to add a text. Ask for confirmation.
+- (IBAction)confirmAddText:(id)sender;
 
 // User tapped to delete the current text. Ask for confirmation.
 - (IBAction)confirmDeleteCurrentText:(id)sender;
 
-// Show view for editing the current text.
-- (IBAction)editText:(id)sender;
+// User tapped to edit the current text. Ask for confirmation (or type of editing).
+- (IBAction)confirmEditCurrentText:(id)sender;
 
 // EditTextViewControllerDelegate method. Since the text may have changed, update the view.
 - (void)editTextViewControllerDidFinishEditing:(EditTextViewController *)sender;
