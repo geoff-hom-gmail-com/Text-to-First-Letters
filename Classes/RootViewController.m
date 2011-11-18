@@ -15,6 +15,7 @@
 #import "Text.h"
 #import "TextMemoryAppDelegate.h"
 #import "TextsTableViewController.h"
+#import "WordOverlayView.h"
 
 // Set to YES to show UI for launch image. Can capture in simulator: control key -> Edit menu -> Copy Screen -> in GraphicConverter or Preview, File -> New from clipboard.
 BOOL createLaunchImages = NO;
@@ -522,6 +523,20 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 		self.firstLettersSegmentIndex = 1;
 		[self.textToShowSegmentedControl setTitle:fullTextModeTitleString forSegmentAtIndex:self.fullTextSegmentIndex];
 		[self.textToShowSegmentedControl setTitle:firstLetterTextModeTitleString forSegmentAtIndex:self.firstLettersSegmentIndex];
+		
+		// Add word overlay view to detect taps on words. Add single-tap gesture recognizer.
+		WordOverlayView *aWordOverlayView = [[WordOverlayView alloc] initWithFrame:self.currentTextTextView.frame];
+		aWordOverlayView.textView = self.currentTextTextView;
+		aWordOverlayView.textView.delegate = aWordOverlayView;
+		//aWordOverlayView.delegate = self;
+		[self.view addSubview:aWordOverlayView];
+		// add action later
+		UITapGestureRecognizer *aSingleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:nil];
+		aSingleTapGestureRecognizer.numberOfTapsRequired = 1;
+		// may not need gesture recognizer
+		//[aWordOverlayView addGestureRecognizer:aSingleTapGestureRecognizer];
+		[aSingleTapGestureRecognizer release];
+		[aWordOverlayView release];
 		
 		// Add overlay view on top of all views.
 		CGRect windowMinusBarsFrame = CGRectMake(0, self.currentTextTextView.frame.origin.y, self.view.frame.size.width, self.currentTextTextView.frame.size.height);

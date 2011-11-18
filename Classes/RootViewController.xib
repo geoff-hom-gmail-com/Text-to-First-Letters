@@ -4938,8 +4938,28 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						</object>
 						<object class="IBUserGuide">
 							<reference key="view" ref="766721923"/>
+							<double key="location">185</double>
+							<int key="affinity">0</int>
+						</object>
+						<object class="IBUserGuide">
+							<reference key="view" ref="766721923"/>
+							<double key="location">177</double>
+							<int key="affinity">0</int>
+						</object>
+						<object class="IBUserGuide">
+							<reference key="view" ref="766721923"/>
 							<double key="location">384</double>
 							<int key="affinity">0</int>
+						</object>
+						<object class="IBUserGuide">
+							<reference key="view" ref="766721923"/>
+							<double key="location">57</double>
+							<int key="affinity">1</int>
+						</object>
+						<object class="IBUserGuide">
+							<reference key="view" ref="766721923"/>
+							<double key="location">45</double>
+							<int key="affinity">1</int>
 						</object>
 					</object>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -5079,7 +5099,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>addAText:</string>
 							<string>changeTextModeToShow:</string>
 							<string>confirmAddText:</string>
 							<string>confirmDeleteCurrentText:</string>
@@ -5092,7 +5111,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
 							<string>UISegmentedControl</string>
 							<string>id</string>
 							<string>id</string>
@@ -5108,7 +5126,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>addAText:</string>
 							<string>changeTextModeToShow:</string>
 							<string>confirmAddText:</string>
 							<string>confirmDeleteCurrentText:</string>
@@ -5121,10 +5138,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBActionInfo">
-								<string key="name">addAText:</string>
-								<string key="candidateClassName">id</string>
-							</object>
 							<object class="IBActionInfo">
 								<string key="name">changeTextModeToShow:</string>
 								<string key="candidateClassName">UISegmentedControl</string>
