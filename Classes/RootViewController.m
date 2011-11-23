@@ -15,7 +15,6 @@
 #import "Text.h"
 #import "TextMemoryAppDelegate.h"
 #import "TextsTableViewController.h"
-#import "WordOverlayView.h"
 
 // Set to YES to show UI for launch image. Can capture in simulator: control key -> Edit menu -> Copy Screen -> in GraphicConverter or Preview, File -> New from clipboard.
 BOOL createLaunchImages = NO;
@@ -49,6 +48,12 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 // Once we create this, we'll keep it in memory and just reuse it.
 @property (nonatomic, retain) UIPopoverController *popoverController;
 
+// Date when the text view was double-tapped while in first-letter mode.
+@property (nonatomic, retain) NSDate *textViewDoubleTapInFirstLetterModeDate;
+
+// Date when the text view's selection changed.
+@property (nonatomic, retain) NSDate *textViewSelectionChangeDate;
+
 // Add a new text and show it.
 - (void)addANewText;
 
@@ -67,11 +72,17 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 // Stop key-value observing.
 - (void)removeObservers;
 
+// Return whether to show the full text for the text view's selection. Should return YES if the user double-tapped on a word while in first-letter mode.
+- (BOOL)shouldShowFullTextForSelection;
+
 // Show only the first letter of each word (plus punctuation).
 - (void)showFirstLettersOnly;
 
 // Show the entire text (vs. only first letters).
 - (void)showFullText;
+
+// Show the entire text for the text view's current selection (in first-letter mode), expanding to at least a word.
+- (void)showFullTextForSelection;
 
 // Make sure the correct title and text is showing. (And that the text's mode is correct.)
 - (void)updateTitleAndTextShowing;
@@ -81,7 +92,7 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 @implementation RootViewController
 
 @synthesize addTextBarButtonItem, bottomToolbar, currentText, currentTextTextView, editTextBarButtonItem, textToShowSegmentedControl, titleLabel, topToolbar, trashBarButtonItem;
-@synthesize firstLettersSegmentIndex, fullTextSegmentIndex, popoverController;
+@synthesize firstLettersSegmentIndex, fullTextSegmentIndex, popoverController, textViewDoubleTapInFirstLetterModeDate, textViewSelectionChangeDate;
 
 - (void)actionSheet:(UIActionSheet *)theActionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	
@@ -128,7 +139,7 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 }
 
 - (IBAction)changeTextModeToShow:(UISegmentedControl *)theSegmentedControl {
-	
+
 	if (theSegmentedControl.selectedSegmentIndex == self.fullTextSegmentIndex) {
 		
 		[self showFullText];
@@ -202,12 +213,15 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 	
 	self.popoverController.delegate = nil;
 	[popoverController release];
-	
+	[textViewDoubleTapInFirstLetterModeDate release];
+    [textViewSelectionChangeDate release];
+    
 	[introText_ release];
     
 	[addTextBarButtonItem release];
 	[bottomToolbar release];
 	[currentText release];
+	self.currentTextTextView.delegate = nil;
 	[currentTextTextView release];
 	[editTextBarButtonItem release];
 	[textToShowSegmentedControl release];
@@ -296,35 +310,60 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 	[self maintainRelativeWidthOfTextView:self.currentTextTextView];
 }
 
-- (IBAction)handleDoubleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer {
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    
+    // There is a custom double-tap gesture recognizer attached to the text view. Currently, it's the only gesture recognizer that has this class as its delegate. We want this recognizer to work with other double-tap recognizers inherent to the text view.
+    
+    BOOL answer = NO;
+    if ( [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] ) {
+        
+        UITapGestureRecognizer *aTapGestureRecognizer = (UITapGestureRecognizer *)otherGestureRecognizer;
+        if (aTapGestureRecognizer.numberOfTapsRequired == 2) {
+            
+            answer = YES;
+        }
+    } 
+    return answer;
+}
+
+- (void)handleMarginDoubleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer {
 	
 	// If not showing first letters, show them. Else, show full text.
 	
 	if (self.textToShowSegmentedControl.selectedSegmentIndex != self.firstLettersSegmentIndex) {
 		
-		self.textToShowSegmentedControl.selectedSegmentIndex = self.firstLettersSegmentIndex;
+        self.textToShowSegmentedControl.selectedSegmentIndex = self.firstLettersSegmentIndex;
 	} else {
 		
 		self.textToShowSegmentedControl.selectedSegmentIndex = self.fullTextSegmentIndex;
 	}
+    
+    // In iOS 4.3, setting a UISegmentedControl's index programmatically will trigger the "value changed" event. In iOS 5, it doesn't. So we'll send it manually.
+    double iOSVersion = [ [UIDevice currentDevice].systemVersion doubleValue];
+    if (iOSVersion >= 5.0) {
+        [self.textToShowSegmentedControl sendActionsForControlEvents:UIControlEventValueChanged];
+    }
 }
 
-/*
-- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)thePinchGestureRecognizer {
-	
-	// If pinch in (velocity < 0), show first letters. Else, show full text. We'll do this by mimicking the user tapping the segmented control.
-
-	if ((thePinchGestureRecognizer.velocity < 0) && 
-		(self.textToShowSegmentedControl.selectedSegmentIndex != self.firstLettersSegmentIndex)) {
-		
-		self.textToShowSegmentedControl.selectedSegmentIndex = self.firstLettersSegmentIndex;
-	} else if ((thePinchGestureRecognizer.velocity > 0) && 
-			   (self.textToShowSegmentedControl.selectedSegmentIndex != self.fullTextSegmentIndex)) {
-		
-		self.textToShowSegmentedControl.selectedSegmentIndex = self.fullTextSegmentIndex;
-	}
+- (void)handleMarginSingleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer {
+        
+    if (self.textToShowSegmentedControl.selectedSegmentIndex == self.firstLettersSegmentIndex) {
+        
+        [self showFirstLettersOnly];
+    }
 }
- */
+
+- (void)handleTextViewDoubleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer {
+
+    if (self.textToShowSegmentedControl.selectedSegmentIndex == self.firstLettersSegmentIndex) {
+        
+        self.textViewDoubleTapInFirstLetterModeDate = [NSDate date];
+        if ( [self shouldShowFullTextForSelection] ) {
+            
+            [self showFullTextForSelection];
+        } 
+    }
+}
 
 // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -405,6 +444,31 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
     return YES;
 }
 
+- (BOOL)shouldShowFullTextForSelection {
+    
+    // Check whether there was a double-tap in the text view in first-letter mode. Check whether the text view's selection changed. Check if both happened recently.
+    
+    BOOL answer = NO;
+//    NSLog(@"RVC checking whether to show full text for selection...");
+    if (self.textViewDoubleTapInFirstLetterModeDate != nil && self.textViewSelectionChangeDate != nil) {
+        
+//        NSLog(@"RVC dtap and selection-change both detected");
+
+        if ( ( [self.textViewDoubleTapInFirstLetterModeDate timeIntervalSinceNow] > -0.1 ) && ( [self.textViewSelectionChangeDate timeIntervalSinceNow] > -0.1 ) ) {
+            
+//            NSLog(@"RVC dtap and selection-change both recent enough...");
+                
+            // A double-tap in whitespace may have the above be true, but the selected location will be NSNotFound. So check against that.
+            if (self.currentTextTextView.selectedRange.location != NSNotFound) {
+                
+//                NSLog(@"RVC selection is valid...");
+                answer = YES;
+            }
+        }
+    }
+    return answer;
+}
+
 - (void)showFirstLettersOnly {
 	
 	self.currentTextTextView.text = self.currentText.firstLetterText;
@@ -413,6 +477,69 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 - (void)showFullText {
 	
 	self.currentTextTextView.text = self.currentText.text;
+}
+
+- (void)showFullTextForSelection {
+    
+    // In iOS 4.3, when a word is double-tapped, the edit menu appears briefly. Stop that from occurring.
+    [UIMenuController sharedMenuController].menuVisible = NO;
+    
+    // Check char at start of range (even if length 0). If underscore, then extend left side until non-underscore.
+    
+    NSUInteger startLocation;
+    NSUInteger firstSelectedCharacterIndex = self.currentTextTextView.selectedRange.location;
+    unichar firstSelectedCharacter = [self.currentTextTextView.text characterAtIndex:firstSelectedCharacterIndex];
+    NSCharacterSet *nonUnderscoreCharacterSet = [[NSCharacterSet characterSetWithCharactersInString:@"_"] invertedSet];
+    if (firstSelectedCharacter == '_' && firstSelectedCharacterIndex != 0) {
+        
+        // Check characters before the start of the range.
+        NSRange rangeToCheck = NSMakeRange(0, firstSelectedCharacterIndex);
+        
+        NSRange rangeOfFirstNonUnderscore = [self.currentTextTextView.text rangeOfCharacterFromSet:nonUnderscoreCharacterSet options:NSBackwardsSearch range:rangeToCheck];
+        startLocation = rangeOfFirstNonUnderscore.location;
+    } else {
+        startLocation = firstSelectedCharacterIndex;
+    }
+    
+    // Check char just after end of range. If underscore, then extend right side until non-underscore.
+    
+    NSUInteger endLocation;
+    NSUInteger nextCharacterIndex;
+    if (self.currentTextTextView.selectedRange.length == 0) {
+        
+        nextCharacterIndex = firstSelectedCharacterIndex + 1;
+    } else {
+        
+        nextCharacterIndex = NSMaxRange(self.currentTextTextView.selectedRange);
+    }
+    if (nextCharacterIndex < [self.currentTextTextView.text length] ) {
+        
+        unichar nextCharacter = [self.currentTextTextView.text characterAtIndex:nextCharacterIndex];
+        if (nextCharacter == '_') {
+            
+            NSRange rangeToCheck = NSMakeRange(nextCharacterIndex, [self.currentTextTextView.text length] - nextCharacterIndex);
+            NSRange rangeOfFirstNonUnderscore = [self.currentTextTextView.text rangeOfCharacterFromSet:nonUnderscoreCharacterSet options:0 range:rangeToCheck];
+            endLocation = rangeOfFirstNonUnderscore.location - 1;
+        } else {
+            
+            endLocation = nextCharacterIndex - 1;
+        }
+    } else {
+        
+        endLocation = nextCharacterIndex - 1;
+    }
+    
+    if (endLocation >= startLocation) {
+        
+        // Replace text in range with full text.
+    
+        NSRange rangeToShowAsFullText = NSMakeRange(startLocation, endLocation - startLocation + 1);
+        NSString *fullTextString = [self.currentText.text substringWithRange:rangeToShowAsFullText];
+        //NSLog(@"RVC tVDCS. Word to show:||%@||", fullTextString);
+        NSString *textWithReplacementString = [self.currentTextTextView.text stringByReplacingCharactersInRange:rangeToShowAsFullText withString:fullTextString];
+        
+        self.currentTextTextView.text = textWithReplacementString;
+    }
 }
 
 - (IBAction)showFontSizePopover:(id)sender {
@@ -492,6 +619,34 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 	self.currentText = sender.currentText;
 }
 
+- (void)textViewDidChangeSelection:(UITextView *)theTextView {
+	
+    //NSLog(@"RVC selection changed to:||%@||", NSStringFromRange(theTextView.selectedRange) );
+    
+    // Sometimes the selected range will be beyond the end of the text. In that case, hide the edit menu and do nothing.
+    
+    if (self.currentTextTextView.selectedRange.location >= [self.currentTextTextView.text length] ) {
+        
+        // The edit menu will still appear sometimes. For example, if the user double-taps in certain non-word areas (e.g., right before a word? in whitespace?). It doesn't happen every time the range equals the length, but when it does happen, the range equals the length. However, logging here says the menu isn't visible, and setting it not visible here doesn't help. In this case, the edit menu must be triggered downstream, elsewhere. 
+        // Update: Resigning first responder seems to prevent the edit menu from appearing.
+        
+        //[[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+        
+        if (self.currentTextTextView.isFirstResponder) {
+            
+            [self.currentTextTextView resignFirstResponder];
+        }
+        
+        return;
+    }
+    
+    self.textViewSelectionChangeDate = [NSDate date];
+    if ( [self shouldShowFullTextForSelection] ) {
+        
+        [self showFullTextForSelection];
+    }
+}
+
 - (void)updateTitleAndTextShowing {
 	
 	self.titleLabel.text = self.currentText.title;
@@ -524,39 +679,23 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 		[self.textToShowSegmentedControl setTitle:fullTextModeTitleString forSegmentAtIndex:self.fullTextSegmentIndex];
 		[self.textToShowSegmentedControl setTitle:firstLetterTextModeTitleString forSegmentAtIndex:self.firstLettersSegmentIndex];
 		
-		// Add word overlay view to detect taps on words. Add single-tap gesture recognizer.
-		WordOverlayView *aWordOverlayView = [[WordOverlayView alloc] initWithFrame:self.currentTextTextView.frame];
-		aWordOverlayView.textView = self.currentTextTextView;
-		aWordOverlayView.textView.delegate = aWordOverlayView;
-		//aWordOverlayView.delegate = self;
-		[self.view addSubview:aWordOverlayView];
-		// add action later
-		UITapGestureRecognizer *aSingleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:nil];
-		aSingleTapGestureRecognizer.numberOfTapsRequired = 1;
-		// may not need gesture recognizer
-		//[aWordOverlayView addGestureRecognizer:aSingleTapGestureRecognizer];
-		[aSingleTapGestureRecognizer release];
-		[aWordOverlayView release];
-		
 		// Add overlay view on top of all views.
 		CGRect windowMinusBarsFrame = CGRectMake(0, self.currentTextTextView.frame.origin.y, self.view.frame.size.width, self.currentTextTextView.frame.size.height);
 		OverlayView *anOverlayView = [[OverlayView alloc] initWithFrame:windowMinusBarsFrame];
 		anOverlayView.textViewToIgnore = self.currentTextTextView;
 		[self.view addSubview:anOverlayView];
-		
-		/*
-		// Add pinch gesture recognizer.
-		UIPinchGestureRecognizer *aPinchGestureRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
-		//[someView addGestureRecognizer:aPinchGestureRecognizer];
-		[aPinchGestureRecognizer release];
-		 */
-		
-		// Add double-tap gesture recognizer.
-		UITapGestureRecognizer *aDoubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTapGesture:)];
+        
+		// Add gesture recognizer for double taps in the text margins.
+		UITapGestureRecognizer *aDoubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMarginDoubleTapGesture:)];
 		aDoubleTapGestureRecognizer.numberOfTapsRequired = 2;
 		[anOverlayView addGestureRecognizer:aDoubleTapGestureRecognizer];
 		[aDoubleTapGestureRecognizer release];
-		
+        
+        // Add gesture recognizer for single taps in the text margins.
+		UITapGestureRecognizer *aSingleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMarginSingleTapGesture:)];
+		aSingleTapGestureRecognizer.numberOfTapsRequired = 1;
+        [anOverlayView addGestureRecognizer:aSingleTapGestureRecognizer];
+		[aSingleTapGestureRecognizer release];
 		[anOverlayView release];
 		
 		// Align text view so it doesn't appear to shift later.
@@ -564,6 +703,16 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 		
 		// Set initial text.
 		self.currentText = [self introText];
+		
+		// Set text view's delegate.
+		self.currentTextTextView.delegate = self;
+        
+        // Add gesture recognizer for double taps in the text view.
+        aDoubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTextViewDoubleTapGesture:)];
+        aDoubleTapGestureRecognizer.numberOfTapsRequired = 2;
+        aDoubleTapGestureRecognizer.delegate = self;
+		[self.currentTextTextView addGestureRecognizer:aDoubleTapGestureRecognizer];
+        [aDoubleTapGestureRecognizer release];        
 	}
 }
 
@@ -575,10 +724,13 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 	
 	// Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
-	self.popoverController.delegate = nil;
+	
+    self.popoverController.delegate = nil;
 	self.popoverController = nil;
+    
 	self.addTextBarButtonItem = nil;
 	self.bottomToolbar = nil;
+	self.currentTextTextView.delegate = nil;
 	self.currentTextTextView = nil;
 	self.editTextBarButtonItem = nil;
 	self.textToShowSegmentedControl = nil;
@@ -588,3 +740,5 @@ NSString *testWidthString = @"_abcdefghijklmnopqrstuvwxyzabcdefghijklm_";
 }
 
 @end
+
+

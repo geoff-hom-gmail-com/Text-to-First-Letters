@@ -16,7 +16,7 @@
 // String for maintaining width of text views. ~1.5 alphabets.
 extern NSString *testWidthString;
 
-@interface RootViewController : UIViewController <EditTextViewControllerDelegate, FontSizeViewControllerDelegate, TextsTableViewDelegate, UIActionSheetDelegate, UIPopoverControllerDelegate> {
+@interface RootViewController : UIViewController <EditTextViewControllerDelegate, FontSizeViewControllerDelegate, TextsTableViewDelegate, UIActionSheetDelegate, UIPopoverControllerDelegate, UITextViewDelegate, UIGestureRecognizerDelegate> {
 
 @private
     Text *introText_;
@@ -72,11 +72,17 @@ extern NSString *testWidthString;
 // FontSizeViewControllerDelegate method. Since the font size changed, update the font in the text view.
 - (void)fontSizeViewControllerDidChangeFontSize:(FontSizeViewController *)theFontSizeViewController;
 
-// Double-tap to toggle first letters or full text.
-- (IBAction)handleDoubleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer;
+// UIGestureRecognizerDelegate method. Allow the gesture recognizer with this class as the delegate to work with others.
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer;
 
-// Pinch in to show first letters. Pinch out to show full text.
-//- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)thePinchGestureRecognizer;
+// A double tap was made in a text margin. Toggle first letters or full text.
+- (void)handleMarginDoubleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer;
+
+// A single tap was made in a text margin. If showing first letters, then reset the first letters (i.e., hide any full text that was revealed).
+- (void)handleMarginSingleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer;
+
+// A double tap was made in the text view. If it's showing first letters, record that. Check whether to show the full text for the text view's selection.
+- (void)handleTextViewDoubleTapGesture:(UITapGestureRecognizer *)theTapGestureRecognizer;
 
 // UIPopoverControllerDelegate method. Since the popover was dismissed, re-enable the corresponding toolbar.
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController;
@@ -89,5 +95,8 @@ extern NSString *testWidthString;
 
 // TextsTableViewDelegate method. Since the user selected a text, dismiss the popover and show the text.
 - (void)textsTableViewControllerDidSelectText:(TextsTableViewController *)sender;
+
+// UITextViewDelegate method. If in first-letter mode, show the selection's full text. (Exceptions: ?)
+- (void)textViewDidChangeSelection:(UITextView *)theTextView;
 
 @end

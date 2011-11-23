@@ -89,8 +89,9 @@ NSString *welcomeTextTitle = @"Welcome";
 	// Get current version.
 	NSNumber *aCurrentVersionNumber = [TextMemoryAppDelegate versionNumber];
 	
-	// Check if current version > version from main store.
-	if ([aCurrentVersionNumber compare:defaultData.versionNumber] == NSOrderedDescending) {
+	// Check if current version > version from main store. Was comparing NSNumbers directly, but aCurrentVersionNumber is derived from a string and stopped comparing properly in iOS 5.0.
+    //if ([aCurrentVersionNumber compare:defaultData.versionNumber] == NSOrderedDescending) {
+    if ( [aCurrentVersionNumber floatValue] > [defaultData.versionNumber floatValue] ) {
 		
 		NSLog(@"Newer version detected: updating default data.");
 		NSLog(@"Current version number:%@", aCurrentVersionNumber);
@@ -109,7 +110,7 @@ NSString *welcomeTextTitle = @"Welcome";
 	NSPersistentStoreCoordinator *aPersistentStoreCoordinator = [aTextMemoryAppDelegate persistentStoreCoordinator];
 	NSURL *defaultDataStoreURL = [[NSBundle mainBundle] URLForResource:defaultDataStoreName withExtension:nil];
 	NSError *error;
-	NSPersistentStore *defaultDataPersistentStore = [aPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:defaultDataStoreURL options:nil error:&error];
+	NSPersistentStore *defaultDataPersistentStore = [aPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:defaultDataStoreURL options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:NSReadOnlyPersistentStoreOption] error:&error];
 	if (!defaultDataPersistentStore) {
 		NSLog(@"Unresolved error adding default-data store: %@, %@", error, [error userInfo]);
 	}

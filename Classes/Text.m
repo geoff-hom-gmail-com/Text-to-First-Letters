@@ -119,6 +119,7 @@
 		previousCharacterWasLetter = currentCharacterIsLetter;
 	}
 	[letterEtAlCharacterSet release];
+    //NSLog(@"T cFLT:%@", aMutableFirstLetterText);
 	return aMutableFirstLetterText;
 }
 

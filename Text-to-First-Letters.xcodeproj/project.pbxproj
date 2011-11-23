@@ -23,7 +23,6 @@
 		934915C01441785400ED3BD0 /* Default-Portrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 934915BF1441785400ED3BD0 /* Default-Portrait.png */; };
 		934915C21441786100ED3BD0 /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 934915C11441786100ED3BD0 /* Default-Landscape.png */; };
 		934916351442D5EE00ED3BD0 /* OverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 934916341442D5EE00ED3BD0 /* OverlayView.m */; };
-		935EE3E21474B58000256830 /* WordOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 935EE3E11474B58000256830 /* WordOverlayView.m */; };
 		93908AD9142901960037CE62 /* DefaultData.m in Sources */ = {isa = PBXBuildFile; fileRef = 93908AD8142901960037CE62 /* DefaultData.m */; };
 		93908B2D142911D80037CE62 /* default-data.plist in Resources */ = {isa = PBXBuildFile; fileRef = 93908B2C142911D80037CE62 /* default-data.plist */; };
 		93908B7114291A570037CE62 /* defaultDataStore.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 93908B7014291A570037CE62 /* defaultDataStore.sqlite */; };
@@ -60,8 +59,6 @@
 		934915C11441786100ED3BD0 /* Default-Landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape.png"; sourceTree = "<group>"; };
 		934916331442D5EE00ED3BD0 /* OverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OverlayView.h; sourceTree = "<group>"; };
 		934916341442D5EE00ED3BD0 /* OverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OverlayView.m; sourceTree = "<group>"; };
-		935EE3E01474B58000256830 /* WordOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WordOverlayView.h; sourceTree = "<group>"; };
-		935EE3E11474B58000256830 /* WordOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WordOverlayView.m; sourceTree = "<group>"; };
 		93908AD7142901960037CE62 /* DefaultData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultData.h; sourceTree = "<group>"; };
 		93908AD8142901960037CE62 /* DefaultData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultData.m; sourceTree = "<group>"; };
 		93908B2C142911D80037CE62 /* default-data.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "default-data.plist"; sourceTree = "<group>"; };
@@ -119,8 +116,6 @@
 				93908D12142D0FB90037CE62 /* TextsTableViewController.h */,
 				93908D13142D0FB90037CE62 /* TextsTableViewController.m */,
 				93908D14142D0FB90037CE62 /* TextsTableViewController.xib */,
-				935EE3E01474B58000256830 /* WordOverlayView.h */,
-				935EE3E11474B58000256830 /* WordOverlayView.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -208,6 +203,9 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Text-to-First-Letters" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -264,7 +262,6 @@
 				93909245142EA13C0037CE62 /* EditTextViewController.m in Sources */,
 				934912D91435A72700ED3BD0 /* FontSizeViewController.m in Sources */,
 				934916351442D5EE00ED3BD0 /* OverlayView.m in Sources */,
-				935EE3E21474B58000256830 /* WordOverlayView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,7 +303,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				PREBINDING = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
@@ -320,8 +317,8 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;

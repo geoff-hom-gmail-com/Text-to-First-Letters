@@ -215,6 +215,7 @@ BOOL restoreDefaultData = NO;
 	NSArray *urlArray = [aFileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
 	[aFileManager release];
 	NSURL *aURL = (NSURL *)[urlArray objectAtIndex:0];
+
 	return aURL;
 }
 
@@ -256,6 +257,7 @@ BOOL restoreDefaultData = NO;
 	[aNumberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	NSNumber *aVersionNumber = [aNumberFormatter numberFromString:versionNumberString];
 	[aNumberFormatter release];
+    
 	return aVersionNumber;
 }
 
