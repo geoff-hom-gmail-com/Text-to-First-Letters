@@ -12,7 +12,7 @@
 
 NSString *defaultDataStoreName = @"defaultDataStore.sqlite";
 
-NSString *welcomeTextTitle = @"Welcome";
+NSString *welcomeTextTitle = @"Welcome!";
 
 // Private category for private methods.
 @interface DefaultData ()

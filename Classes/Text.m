@@ -58,7 +58,14 @@
 	NSLog(@"Awake from insert");
 	self.isDefaultData = NO;
 	self.title = @"A New Text";
-	self.text = @"This is the default text.";
+	self.text = @"This is a new text."
+        "\n\nTo edit the title and words of this text: First, tap \"Edit\" (top-left of the screen), then \"Edit Current Title and Text,\" to go into editing mode."
+        "\n\nTo edit the title: While in editing mode, tap \"Rename Title\" (bottom-left)."
+        "\n\nTo edit the words of this text: While in editing mode, tap the text."
+        "\n\nTo select all of the text: While in editing mode, hold your finger on the text until a magnifying glass appears. Then let go, and a menu will appear with options to \"Select\" and \"Select All.\"" 
+        "\n\nTo add text by pasting it: First, select your desired text and \"Copy\" or \"Cut\" it. (This can be done even in another app.) Then, follow the instructions above for selecting all of the text. The resulting menu will also have an option to \"Paste.\""
+        "\n\nTo leave editing mode: Tap \"Cancel\" (top-left) to undo any changes to the words of this text, or tap \"Done\" (top-right) to save the changes."
+        "\n\nTo delete this text: Tap the Trash Can (bottom-left), then \"Delete This Text.\" (If you accidentally tap the Trash Can, just tap anywhere except \"Delete This Text.\" Try it now to get a feel for it.)";
 }
 
 - (Text *)clone {

@@ -2,36 +2,46 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Welcome</key>
+	<key>Welcome!</key>
 	<dict>
 		<key>Text</key>
 		<string>Welcome to Text-to-First-Letters, by Geoff Hom!
 		
-Text-to-First-Letters is a tool for showing the first letter of each word in a given text. You can see this now by tapping "First Letters" (bottom of the screen). 
+This is a tool for memorizing any text. It works by showing you only the first letter of each word in the text. 
+            
+First, add the text you want to memorize. Then, study the text until you can read it aloud by seeing only the first letters.
 
-One use for this app is to help you memorize a text. When you can recite a text by seeing only the first letter of each word, then the text should effectively be in your head.
+The big idea: When you see only the first letters, but you can read the entire text aloud, then the text should effectively be in your head.
+            
+Geoff may be reached at GeoffHom@gmail.com.
 
-To see an example, tap "Texts" (upper-right).
-
-Geoff may be reached at geoffhom@gmail.com.</string>
+            
+An example is included, with instructions for using this tool. To see the example: Tap "Texts" (top-left of the screen), then "Example."</string>
 	</dict>
 	<key>Example</key>
 	<dict>
 		<key>Text</key>
-		<string>To get a feel for this app, try to memorize these words:
+		<string>To get a feel for this tool, try to memorize this paragraph from Abraham Lincoln:
 		
   "Four score and seven years ago, our fathers brought forth, on this continent, a new nation, conceived in liberty, and dedicated to the proposition that all men are created equal."
 
 
-Switch between first letters and full text by tapping "First Letters" and "Full Text" (bottom of the screen). Alternatively, you may double-tap in the margins outside the text.
+You may switch between the full text and the first letter of each word by tapping "Full Text" and "First Letters" (bottom of the screen). Your goal is to recite the paragraph above when only the first letters are visible.
+            
 
-To increase or decrease the font size, tap "Font Size" (upper-right).
+After you have memorized the text, try the following:
 
-To add your own text, tap "Add a Text" (upper-left). You will immediately be given a new text. To switch back to this example, tap "Texts" (upper-right). 
+Switch between full text and first letters more easily: Double-tap in the margins outside the text.
 
-To edit the title/words of a text, tap "Edit Text" (lower-right).
+Reveal a word: While viewing first letters, double-tap a word. 
+            
+Hide revealed words: While viewing first letters, double-tap a word to reveal it. Then, make a single tap in the margins outside the text.
+            
+Increase or decrease the font size: Tap "Font Size" (top-right).
 
-To delete a text, tap the Trash Can (lower-left). You will have to make a second tap to delete the text, so feel free to try it.</string>
+Add a new text: Tap "+" (top-left), then "Add a New Text."
+        
+Enjoy!</string>
 	</dict>
 </dict>
 </plist>
